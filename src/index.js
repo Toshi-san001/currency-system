@@ -1,5 +1,5 @@
 'use-strict';
-const db = requrie("mongoose");
+const db = require("mongoose");
 const ms = require("parse-ms");
 const cs = require("./models/currency");
 
