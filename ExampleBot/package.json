@@ -1,0 +1,15 @@
+{
+  "name": "examplebot",
+  "version": "1.0.0",
+  "description": "This is a example bot on how to use the CurrencySystem package",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "npm i && node src/index.js"
+  },
+  "author": "BIntelligent",
+  "license": "ISC",
+  "dependencies": {
+    "@silent-coder/discord-cmd-handler": "^1.0.1-3",
+    "discord.js": "^12.5.1"
+  }
+}

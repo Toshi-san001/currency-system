@@ -1,0 +1,31 @@
+{
+  "name": "currency-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "none"
+  },
+  "keywords": [
+    "curreny",
+    "level",
+    "up",
+    "system",
+    "inventory",
+    "money",
+    "discord",
+    "js",
+    "discordjs"
+  ],
+  "author": "silent-coder",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "mongoose": "^5.11.8",
+    "parse-ms": "^2.1.0"
+  }
+}
