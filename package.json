@@ -8,7 +8,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "none"
+    "url": "https://github.com/BIntelligent/currency-system.git",
+    "homepage": "https://github.com/BIntelligent/currency-system/#README.md"
   },
   "keywords": [
     "curreny",
