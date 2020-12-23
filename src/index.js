@@ -1,7 +1,7 @@
 'use-strict';
-import db from "mongoose";
-import ms from "parse-ms";
-import cs from "./models/currency";
+const db = requrie("mongoose");
+const ms = require("parse-ms");
+const cs = require("./models/currency");
 
 /**
  * 
@@ -77,7 +77,7 @@ function connect(password) {
  * 
  * @param {object} settings  
  */
- 
+
 async function gamble(settings) {
 
     let data = await findUser(settings)
@@ -127,7 +127,7 @@ async function gamble(settings) {
  * 
  * @param {object} settings  
  */
- 
+
 
 async function withdraw(settings) {
     let data = await findUser(settings)
@@ -163,7 +163,7 @@ async function withdraw(settings) {
  * 
  * @param {object} settings  
  */
- 
+
 
 async function deposite(settings) {
     let data = await findUser(settings)
@@ -198,7 +198,7 @@ async function deposite(settings) {
  * 
  * @param {object} settings  
  */
- 
+
 
 async function balance(settings) {
     let data = await findUser(settings)
@@ -214,7 +214,7 @@ async function balance(settings) {
  * 
  * @param {object} settings  
  */
- 
+
 
 async function work(settings) {
     let data = await findUser(settings)
@@ -243,7 +243,7 @@ async function work(settings) {
  * 
  * @param {object} settings  
  */
- 
+
 
 async function rob(settings) {
     let user1 = await findUser(settings)
@@ -299,7 +299,7 @@ async function rob(settings) {
  * 
  * @param {object} settings  
  */
- 
+
 
 async function addMoney(settings) {
     let data = await findUser(settings)
@@ -321,7 +321,7 @@ async function addMoney(settings) {
  * 
  * @param {object} settings  
  */
- 
+
 
 async function removeMoney(settings) {
     let data = await findUser(settings)
@@ -343,7 +343,7 @@ async function removeMoney(settings) {
  * 
  * @param {object} settings  
  */
- 
+
 async function transferMoney(settings) {
     let user1 = await findUser(settings)
     if (!user1) user1 = await makeUser(settings);
