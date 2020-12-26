@@ -1,4 +1,5 @@
-const cs = require("currency-system")
+    const CurrencySystem = require("currency-system");
+    const cs = new CurrencySystem;
 exports.run = async (client, message, args) => {
 
     let money = args.join(" ");
