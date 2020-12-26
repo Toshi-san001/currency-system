@@ -183,5 +183,6 @@ const cs = new CurrencySystem;
 1. Documention :)
 2. Version 2
 # Change Logs
-## Version: v1.0.2
+## Version: v1.0.3
 1. Added Readme File (I mean that's alot in itself. **lol**)
+2. Removed documentation files. 
