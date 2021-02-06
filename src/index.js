@@ -9,7 +9,7 @@
 const db = require("mongoose");
 const ms = require("parse-ms");
 const cs = require("./models/currency");
-/**I lovwe thsi
+/**
  * @class CurrencySystem
  */
 class CurrencySystem {
@@ -24,7 +24,7 @@ class CurrencySystem {
         if (user2) user = settings.user2.id;
         const newUser = new cs({
             userID: user,
-            guildID: settings.guild.id,
+            guildID: settings.guild.id || false,
             wallet: 100,
             bank: 1000,
             inventory: "nothing",
@@ -44,7 +44,7 @@ class CurrencySystem {
     async findUser(settings) {
         const find = await cs.findOne({
             userID: settings.user.id,
-            guildID: settings.guild.id
+            guildID: settings.guild.id || false
         });
         return find;
     };
@@ -228,7 +228,7 @@ class CurrencySystem {
 
         let user2 = await cs.findOne({
             userID: settings.user2.id,
-            guildID: settings.guild.id
+            guildID: settings.guild.id || false
         });
         if (!user2) user2 = await makeUser(settings, true)
 
@@ -323,7 +323,7 @@ class CurrencySystem {
 
         let user2 = await cs.findOne({
             userID: settings.user2.id,
-            guildID: settings.guild.id
+            guildID: settings.guild.id || false
         });
         if (!user2) user2 = await makeUser(settings, true)
         let money = parseInt(settings.amount)
@@ -335,6 +335,18 @@ class CurrencySystem {
         saveUser(user2);
         return `**${settings.user.username}**, Successfully transfered **${money}** to **${settings.user2.username}**`;
     }
+
+    /* async addItem(settings) {
+        let user1 = await findUser(settings)
+        if (!user1) user1 = await makeUser(settings);
+
+        let user2 = await cs.findOne({
+            userID: settings.user2.id,
+            guildID: settings.guild.id
+        });
+        if (!user2) user2 = await makeUser(settings, true)
+        
+    }; */
 };
 
 

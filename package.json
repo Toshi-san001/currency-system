@@ -1,10 +1,11 @@
 {
   "name": "currency-system",
-  "version": "1.0.3",
+  "version": "1.1.4",
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "doc": "jsdoc -c jsdoc.json"
+    "doc": "jsdoc -c jsdoc.json",
+    "test": "cd ExampleBot && npm i ../ ; then cd .. && node ExampleBot/src/index.js"
   },
   "repository": {
     "type": "git",
