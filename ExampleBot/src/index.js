@@ -5,13 +5,12 @@ const {
 const Discord = require("discord.js")
 const client = new Discord.Client();
 
-client.login("TOKEN HERE");
+client.login("TOKEN");
+const CurrencySystem = require("currency-system");
+const cs = new CurrencySystem;
+cs.connect("MONGO URL");
 
-const {
-    connect
-} = require("currency-system");
 
-connect("PUT MONGO URL HERE");
 
 client.on("ready", () => {
     //I'm using logger and not console beacuse it has colours :) 
@@ -33,4 +32,5 @@ client.on("ready", () => {
         logCommands: true
     });
     //This will load all commands.
+
 });

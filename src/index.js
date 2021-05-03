@@ -13,41 +13,14 @@ const cs = require("./models/currency");
  * @class CurrencySystem
  */
 class CurrencySystem {
-// This is for Rob Command
+    // This is for Rob Command
     testChance(successPercentage) {
         let random2 = Math.random() * 10;
         return ((random2 -= successPercentage) < 0);
     }
 
-    async makeUser(settings, user2 = false) {
-        let user = settings.user.id
-        if (user2) user = settings.user2.id;
-        const newUser = new cs({
-            userID: user,
-            guildID: settings.guild.id || false,
-            wallet: 100,
-            bank: 1000,
-            inventory: "nothing",
-            lastUpdated: new Date(),
-            lastGamble: 0,
-            lastWork: 0,
-            lastRob: 0
-        });
-        await newUser.save().catch(console.error);
-        return newUser;
-    };
-    async saveUser(data) {
-        await data.save().catch(e => {
-            throw new TypeError(`${e}`);
-        });
-    };
-    async findUser(settings) {
-        const find = await cs.findOne({
-            userID: settings.user.id,
-            guildID: settings.guild.id || false
-        });
-        return find;
-    };
+
+
     connect(password) {
         if (!password.startsWith("mongodb+srv")) throw new TypeError("Invalid MongoURL");
         let connected = true;
@@ -193,6 +166,21 @@ class CurrencySystem {
      */
 
 
+    async leaderboard(guildID) {
+        let data = await cs.find({
+            guildID: guildID
+        }).sort([
+            ['wallet', 'descending']
+        ]).exec();
+        return data;
+    };
+
+    /**
+     * 
+     * @param {object} settings  
+     */
+
+
     async work(settings) {
         let data = await findUser(settings)
         if (!data) data = await makeUser(settings);
@@ -275,7 +263,7 @@ class CurrencySystem {
 
 
     async addMoney(settings) {
-        let data = await findUser(settings)
+        let data = await findUser(settings);
         if (!data) data = await makeUser(settings);
         let check = settings.amount + "";
         if (check.includes("-")) return "You cant add negitive money";
@@ -351,3 +339,32 @@ class CurrencySystem {
 
 
 module.exports = CurrencySystem;
+async function findUser(settings) {
+    let find = await cs.findOne({
+        userID: settings.user.id,
+        guildID: settings.guild.id || false
+    });
+    return find;
+};
+async function makeUser(settings, user2 = false) {
+    let user = settings.user.id
+    if (user2) user = settings.user2.id;
+    const newUser = new cs({
+        userID: user,
+        guildID: settings.guild.id || false,
+        wallet: 100,
+        bank: 1000,
+        inventory: "nothing",
+        lastUpdated: new Date(),
+        lastGamble: 0,
+        lastWork: 0,
+        lastRob: 0
+    });
+    await newUser.save().catch(console.error);
+    return newUser;
+};
+async function saveUser(data) {
+    await data.save().catch(e => {
+        throw new TypeError(`${e}`);
+    });
+};
