@@ -1,8 +1,8 @@
 # Templates
 This will go through all functions with example's
 See https://github.com/BIntelligent/currency-system/tree/main/ExampleBot for a example bot
-##Connect
-#Example
+## Connect
+# Example
 ```js
 const CurrencySystem = require("currency-system");
 const cs = new CurrencySystem;
