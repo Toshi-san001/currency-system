@@ -13,14 +13,6 @@ const cs = require("./models/currency");
  * @class CurrencySystem
  */
 class CurrencySystem {
-    // This is for Rob Command
-    testChance(successPercentage) {
-        let random2 = Math.random() * 10;
-        return ((random2 -= successPercentage) < 0);
-    }
-
-
-
     connect(password) {
         if (!password.startsWith("mongodb+srv")) throw new TypeError("Invalid MongoURL");
         let connected = true;
@@ -368,3 +360,8 @@ async function saveUser(data) {
         throw new TypeError(`${e}`);
     });
 };
+// This is for Rob Command
+function testChance(successPercentage) {
+    let random2 = Math.random() * 10;
+    return ((random2 -= successPercentage) < 0);
+}

@@ -73,7 +73,7 @@ const cs = new CurrencySystem;
     // This is to get First 10 Users
     data = data.slice(0, 10);
     if (data.length < 1) return message.channel.send("Nobody's in leaderboard yet.");
-    const msg = new MessageEmbed()
+    const msg = new Discord.MessageEmbed()
         .addField(`**Leaderboard**:`, data.map(key => `${(data.findIndex(i => i.guildID === key.guildID && i.userID === key.userID) + 1)}. **${client.users.cache.get(key.userID) ? client.users.cache.get(key.userID).username : "Unknown"}#${client.users.cache.get(key.userID) ? client.users.cache.get(key.userID).discriminator : "0000"}** - **${key.wallet}** - **${key.bank}**`).join("\n"));
     message.channel.send(msg).catch();
 ```
