@@ -5,7 +5,7 @@ exports.run = async (client, message, args) => {
     let money = args.join(" ");
     if (!money) return message.channel.send("Enter the amount you want to withdraw.");
 
-    let result = await cs.withdraw(settings = {
+    let result = await cs.withdraw({
         user: message.author,
         guild: message.guild,
         amount: money

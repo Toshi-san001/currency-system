@@ -18,7 +18,7 @@ if (!amount) return message.channel.send("Enter amount of money to add.");
 if (amount.includes("-")) return message.channel.send("You can't send negitive money.")
 let money = parseInt(amount);
 
-let result = await cs.transferMoney(settings = {
+let result = await cs.transferMoney({
     user: message.author,
     user2: user,
     guild: message.guild,

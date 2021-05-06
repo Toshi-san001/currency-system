@@ -11,7 +11,7 @@ exports.run = async (client, message, args) => {
     if (user.bot || user === client.user) return message.channel.send("This user is a bot.");
     if (!user) return message.channel.send('Sorry, you forgot to mention somebody.');
     
-    let result = await cs.rob(settings = {
+    let result = await cs.rob({
         user: message.author,
         user2: user,
         guild: message.guild,

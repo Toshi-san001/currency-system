@@ -5,7 +5,7 @@ exports.run = async (client, message, args) => {
     let money = args.join(" ");
     if (isNaN(money)) return message.channel.send("Amount is not a number.");
 
-    let result = await cs.gamble(settings = {
+    let result = await cs.gamble({
         user: message.author,
         guild: message.guild,
         amount: money,

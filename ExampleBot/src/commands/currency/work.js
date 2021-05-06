@@ -2,7 +2,7 @@
     const cs = new CurrencySystem;
 exports.run = async (client, message, args) => {
 
-    let result = await cs.work(settings = {
+    let result = await cs.work({
         user: message.author,
         guild: message.guild,
         maxAmount: 100,

@@ -15,7 +15,7 @@ cs.connect("MONGO URL");
 client.on("ready", () => {
     //I'm using logger and not console beacuse it has colours :) 
     logger.info(`Logged in as ${client.user.tag} Successfully..!!`)
-    cmdHandler(client, settings = {
+    cmdHandler(client,{
         logs: {
             consoleLogEnabled: true,
             consoleLogMessage: "{user.tag} ( {user.id} ) ran a command: {command} in {guild.name} ( {channel.name} )",

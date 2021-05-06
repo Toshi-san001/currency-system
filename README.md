@@ -32,7 +32,7 @@ const cs = new CurrencySystem;
     // when you will use it from discord , it will a string but parseInt() will convert that string into a <Number>
     let money = parseInt(amount);
     // Adding the money to user.
-    let result = await cs.addMoney(settings = {
+    let result = await cs.addMoney({
         user: user,
         guild: message.guild,
         amount: money,
@@ -57,7 +57,7 @@ const cs = new CurrencySystem;
         user = message.author;
     }
 
-    let result = await cs.balance(settings = {
+    let result = await cs.balance({
         user: user,
         guild: message.guild
     });
@@ -85,7 +85,7 @@ const cs = new CurrencySystem;
     let money = args.join(" ");
     if (!money) return message.channel.send("Enter the amount you want to deposite.");
 
-    let result = await cs.deposite(settings = {
+    let result = await cs.deposite({
         user: message.author,
         guild: message.guild,
         amount: money
@@ -100,7 +100,7 @@ const cs = new CurrencySystem;
     let money = args.join(" ");
     if (isNaN(money)) return message.channel.send("Amount is not a number.");
 
-    let result = await cs.gamble(settings = {
+    let result = await cs.gamble({
         user: message.author,
         guild: message.guild,
         amount: money,
@@ -124,7 +124,7 @@ const cs = new CurrencySystem;
     if (user.bot || user === client.user) return message.channel.send("This user is a bot.");
     if (!user) return message.channel.send('Sorry, you forgot to mention somebody.');
     
-    let result = await cs.rob(settings = {
+    let result = await cs.rob({
         user: message.author,
         user2: user,
         guild: message.guild,
@@ -157,7 +157,7 @@ const cs = new CurrencySystem;
     if (amount.includes("-")) return message.channel.send("You can't send negitive money.")
     let money = parseInt(amount);
 
-    let result = await cs.transferMoney(settings = {
+    let result = await cs.transferMoney({
         user: message.author,
         user2: user,
         guild: message.guild,
@@ -173,7 +173,7 @@ const cs = new CurrencySystem;
    let money = args.join(" ");
     if (!money) return message.channel.send("Enter the amount you want to withdraw.");
 
-    let result = await cs.withdraw(settings = {
+    let result = await cs.withdraw({
         user: message.author,
         guild: message.guild,
         amount: money
@@ -185,7 +185,7 @@ const cs = new CurrencySystem;
 ```js
     const CurrencySystem = require("currency-system");
     const cs = new CurrencySystem;
-    let result = await cs.work(settings = {
+    let result = await cs.work({
         user: message.author,
         guild: message.guild,
         maxAmount: 100,//The max amount of moneyy you get when you work.

@@ -18,7 +18,7 @@ exports.run = async (client, message, args) => {
     if (amount.includes("-")) return message.channel.send("You can't send negitive money.")
     let money = parseInt(amount);
 
-    let result = await cs.transferMoney(settings = {
+    let result = await cs.transferMoney({
         user: message.author,
         user2: user,
         guild: message.guild,

@@ -5,7 +5,7 @@ exports.run = async (client, message, args) => {
     let money = args.join(" ");
     if (!money) return message.channel.send("Enter the amount you want to deposite.");
 
-    let result = await cs.deposite(settings = {
+    let result = await cs.deposite({
         user: message.author,
         guild: message.guild,
         amount: money

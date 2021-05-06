@@ -10,7 +10,7 @@ exports.run = async (client, message, args) => {
         user = message.author;
     }
 
-    let result = await cs.balance(settings = {
+    let result = await cs.balance({
         user: user,
         guild: message.guild
     });
