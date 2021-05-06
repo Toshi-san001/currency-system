@@ -56,14 +56,14 @@ class CurrencySystem {
             data.lastGamble = Date.now();
             data.wallet = data.wallet - amount;
             data.save().catch(err => {
-                thorw `${err}`
+                throw `${err}`
             });
             return `Ahh, no. You lose $${amount}. You've $${data.wallet} left. Good luck next time.`;
         } else if (result > 5) {
             data.lastGamble = Date.now();
             data.wallet = (data.wallet + amount);
             data.save().catch(e => {
-                thorw `${e}`
+                throw `${e}`
             });
             return `Woohoo! You won $${amount}! You've $${data.wallet}. Good luck, have fun!`;
 
