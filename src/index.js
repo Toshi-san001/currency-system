@@ -344,8 +344,8 @@ async function makeUser(settings, user2 = false) {
     const newUser = new cs({
         userID: user,
         guildID: settings.guild.id || false,
-        wallet: 100,
-        bank: 1000,
+        wallet: 0,
+        bank: 0,
         inventory: "nothing",
         lastUpdated: new Date(),
         lastGamble: 0,
