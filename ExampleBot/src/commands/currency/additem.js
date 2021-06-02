@@ -5,7 +5,8 @@ exports.run = async (client, message, args) => {
 if (message.mentions.users.first()) {
     user = message.mentions.users.first();
 } else if (args[0]) {
-    user = message.guild.members.cache.get(args[0]).user;
+                user = message.guild.members.cache.get(args[0]);
+            if (user) user = user.user;;
 } else {
     user.id = "1"
 }

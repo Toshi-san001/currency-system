@@ -5,17 +5,21 @@ const {
 const Discord = require("discord.js")
 const client = new Discord.Client();
 
-client.login("TOKEN");
 const CurrencySystem = require("currency-system");
 const cs = new CurrencySystem;
-cs.connect("MONGO URL");
-
+client.login("LOGIN");
+//sets mongo url
+cs.setMongoURL("MONGO URL");
+//sets default wallet amount when ever new user is created.
+cs.setDefaultWalletAmount(100)
+//sets default bank amount when ever new user is created.
+cs.setDefaultBankAmount(1000)
 
 
 client.on("ready", () => {
     //I'm using logger and not console beacuse it has colours :) 
     logger.info(`Logged in as ${client.user.tag} Successfully..!!`)
-    cmdHandler(client,{
+    cmdHandler(client, {
         logs: {
             consoleLogEnabled: true,
             consoleLogMessage: "{user.tag} ( {user.id} ) ran a command: {command} in {guild.name} ( {channel.name} )",
@@ -32,5 +36,5 @@ client.on("ready", () => {
         logCommands: true
     });
     //This will load all commands.
-
 });
+process.on("unhandledRejection", _=> logger.error(_.stack+'\n' + '='.repeat(20)))

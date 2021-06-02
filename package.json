@@ -31,6 +31,6 @@
     "parse-ms": "^2.1.0"
   },
   "devDependencies": {
-    "jsdoc": "^3.6.6"
+    "jsdoc": "^3.6.7"
   }
 }

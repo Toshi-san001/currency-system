@@ -17,7 +17,8 @@ const cs = new CurrencySystem;
     if (message.mentions.users.first()) {
         user = message.mentions.users.first();
     } else if (args[0]) {
-        user = message.guild.members.cache.get(args[0]).user;
+                    user = message.guild.members.cache.get(args[0]);
+            if (user) user = user.user;;
     } else if (!args[0]) {
         return message.channel.send("Specify a user!");
     }
@@ -52,7 +53,8 @@ const cs = new CurrencySystem;
     if (message.mentions.users.first()) {
         user = message.mentions.users.first();
     } else if (args[0]) {
-        user = message.guild.members.cache.get(args[0]).user;
+                    user = message.guild.members.cache.get(args[0]);
+            if (user) user = user.user;;
     } else if (!args[0]) {
         user = message.author;
     }
@@ -118,7 +120,8 @@ const cs = new CurrencySystem;
     if (message.mentions.users.first()) {
         user = message.mentions.users.first();
     } else if (args[0]) {
-        user = message.guild.members.cache.get(args[0]).user;
+                    user = message.guild.members.cache.get(args[0]);
+            if (user) user = user.user;;
     }
 
     if (user.bot || user === client.user) return message.channel.send("This user is a bot.");
@@ -144,7 +147,8 @@ const cs = new CurrencySystem;
     if (message.mentions.users.first()) {
         user = message.mentions.users.first();
     } else if (args[0]) {
-        user = message.guild.members.cache.get(args[0]).user;
+                    user = message.guild.members.cache.get(args[0]);
+            if (user) user = user.user;;
     } else {
         user.id = "1"
     }
