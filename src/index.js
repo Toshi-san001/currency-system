@@ -44,31 +44,28 @@ class CurrencySystem {
         if (!data) data = await makeUser(settings);
 
         const money = settings.amount;
-        const amount = parseInt(money)
         const result = Math.floor(Math.random() * 10);
         const balance = data.wallet;
         let lastGamble = data.lastGamble;
-        const minAmount = settings.minAmount || 0;
         let cooldown = settings.cooldown || 5;
         cooldown = cooldown * 1000;
-        if (!amount) return {
+        if (!parseInt(money)) return {
             error: true,
             type: 'amount'
         };
-        if (isNaN(amount)) return {
+        if (isNaN(parseInt(money))) return {
             error: true,
             type: 'nan'
         };
-        const neededMoney = balance - amount;
-        if (amount > balance || !balance || balance === 0) return {
+        if (parseInt(money) > balance || !balance || balance === 0) return {
             error: true,
             type: 'low-money',
-            neededMoney: neededMoney
+            neededMoney: balance - parseInt(money)
         };
-        if (amount < minAmount) return {
+        if (parseInt(money) < settings.minAmount || 0) return {
             error: true,
             type: 'gamble-limit',
-            minAmount: minAmount
+            minAmount: settings.minAmount || 0
         };
         let pad_zero = num => (num < 10 ? '0' : '') + num;
         if (lastGamble !== null && cooldown - (Date.now() - lastGamble) > 0) return {
@@ -79,20 +76,20 @@ class CurrencySystem {
 
         if (result < 5) {
             data.lastGamble = Date.now();
-            data.wallet = data.wallet - amount;
+            data.wallet = data.wallet - parseInt(money);
             return {
                 error: false,
                 type: 'lost',
-                amount: amount,
+                amount: parseInt(money),
                 wallet: data.wallet
             };
         } else if (result > 5) {
             data.lastGamble = Date.now();
-            data.wallet = (data.wallet + amount);
+            data.wallet = (data.wallet + parseInt(money));
             return {
                 error: false,
                 type: 'won',
-                amount: amount,
+                amount: parseInt(money),
                 wallet: data.wallet
             };
         };
@@ -105,7 +102,6 @@ class CurrencySystem {
         if (!data) data = await makeUser(settings);
 
         const money = settings.amount;
-        const amount = parseInt(money);
         const bank = data.bank;
 
         if (!money) return {
@@ -116,12 +112,12 @@ class CurrencySystem {
             error: true,
             type: 'negative-money'
         };
-        if (bank < amount) return {
+        if (bank < parseInt(money)) return {
             error: true,
             type: 'low-money'
         };
 
-        if (money == 'all') {
+        if (money === 'all') {
             if (bank === 0) return {
                 error: true,
                 type: 'no-money'
@@ -136,13 +132,13 @@ class CurrencySystem {
 
         } else {
 
-            data.wallet = data.wallet + amount;
-            data.bank = data.bank - amount;
+            data.wallet = data.wallet + parseInt(money);
+            data.bank = data.bank - parseInt(money);
             await saveUser(data);
             return {
                 error: false,
                 type: 'success',
-                amount: amount
+                amount: parseInt(money)
             };
         }
     };
@@ -158,12 +154,11 @@ class CurrencySystem {
         if (!data) data = await makeUser(settings);
 
         const money = settings.amount;
-        const amount = parseInt(money);
         const wallet = data.wallet;
 
         if (!money) return "Specify an amount to deposite";
         if (money.includes('-')) return "You can't deposite negative money";
-        if (amount > wallet) return "You don't have that much money in wallet.";
+        if (parseInt(money) > wallet) return "You don't have that much money in wallet.";
 
         if (!money) return {
             error: true,
@@ -173,13 +168,13 @@ class CurrencySystem {
             error: true,
             type: 'negative-money'
         };
-        if (amount > wallet) return {
+        if (parseInt(money) > wallet) return {
             error: true,
             type: 'low-money'
         };
 
 
-        if (money == 'all') {
+        if (money === 'all') {
 
             if (wallet === 0) return {
                 error: true,
@@ -197,13 +192,13 @@ class CurrencySystem {
 
         } else {
 
-            data.wallet = data.wallet - amount;
-            data.bank = data.bank + amount;
+            data.wallet = data.wallet - parseInt(money);
+            data.bank = data.bank + parseInt(money);
             await saveUser(data);
             return {
                 error: false,
                 type: 'success',
-                amount: amount
+                amount: parseInt(money)
             };
 
         }
@@ -231,9 +226,9 @@ class CurrencySystem {
      */
 
 
-    async leaderboard(guildID) {
+    async leaderboard(guildid) {
         let data = await cs.find({
-            guildID: guildID
+            guildID: guildid
         }).sort([
             ['wallet', 'descending']
         ]).exec();
@@ -260,16 +255,16 @@ class CurrencySystem {
         };
         else {
 
-            let amount = Math.floor(Math.random() * settings.maxAmount || 100) + 1;
+            let amountt = Math.floor(Math.random() * settings.maxAmount || 100) + 1;
             data.lastWork = Date.now();
-            data.wallet = data.wallet + amount;
+            data.wallet = data.wallet + amountt;
             await saveUser(data);
             let result = Math.floor((Math.random() * settings.replies.length));
             return {
                 error: false,
                 type: 'success',
                 workType: settings.replies[result],
-                amount: amount
+                amount: amountt
             };
 
         };
@@ -358,16 +353,15 @@ class CurrencySystem {
     async addMoney(settings) {
         let data = await findUser(settings);
         if (!data) data = await makeUser(settings);
-        let check = settings.amount + "";
+        let check = String(settings.amount);
         if (check.includes("-")) return {
             error: true,
             type: 'negative-money'
         };
         let amount = parseInt(settings.amount) || 0;
-        let wheretoPutMoney;
+        let wheretoPutMoney = data.wallet;
         if (settings.wheretoPutMoney === "bank") wheretoPutMoney = data.bank;
         else if (settings.wheretoPutMoney === "wallet") wheretoPutMoney = data.wallet;
-        else wheretoPutMoney = data.wallet;
         if (wheretoPutMoney === data.wallet) data.wallet += amount;
         if (wheretoPutMoney === data.bank) data.bank += amount;
         await saveUser(data);
@@ -386,16 +380,16 @@ class CurrencySystem {
     async removeMoney(settings) {
         let data = await findUser(settings)
         if (!data) data = await makeUser(settings);
-        let check = settings.amount + "";
+        let check = String(settings.amount);
         if (check.includes("-")) return {
             error: true,
             type: 'negative-money'
         };
         let amount = parseInt(settings.amount) || 0;
-        let wheretoPutMoney;
+        let wheretoPutMoney = data.wallet;
         if (settings.wheretoPutMoney === "bank") wheretoPutMoney = data.bank;
         else if (settings.wheretoPutMoney === "wallet") wheretoPutMoney = data.wallet;
-        else wheretoPutMoney = data.wallet;
+
         if (wheretoPutMoney === data.wallet) data.wallet -= amount;
         if (wheretoPutMoney === data.bank) data.bank -= amount;
         await saveUser(data);
