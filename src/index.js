@@ -5,7 +5,7 @@
  * @file index.js
  */
 
-'use-strict';
+'use strict';
 const db = require("mongoose");
 const ms = require("parse-ms");
 const cs = require("./models/currency");
