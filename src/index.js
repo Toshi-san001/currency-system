@@ -160,11 +160,11 @@ class CurrencySystem {
         const money = settings.amount;
         const amount = parseInt(money);
         const wallet = data.wallet;
-<<<<<<< Updated upstream
+
         if (!money) return "Specify an amount to deposite";
         if (money.includes('-')) return "You can't deposite negative money";
         if (amount > wallet) return "You don't have that much money in wallet.";
-=======
+
         if (!money) return {
             error: true,
             type: 'money'
@@ -177,7 +177,7 @@ class CurrencySystem {
             error: true,
             type: 'low-money'
         };
->>>>>>> Stashed changes
+
 
         if (money == 'all') {
 
