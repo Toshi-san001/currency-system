@@ -226,11 +226,17 @@ class CurrencySystem {
      */
 
 
-    async leaderboard(guildid) {
+    async leaderboard(guildid, sortBy = 'bank') {
         let data = await cs.find({
             guildID: guildid
         }).sort([
-            ['wallet', 'descending']
+            [sortBy, 'descending']
+        ]).exec();
+        return data;
+    };
+    async globalLeaderboard(sortBy = 'bank') {
+        let data = await cs.find().sort([
+            [sortBy, 'descending']
         ]).exec();
         return data;
     };
@@ -353,8 +359,7 @@ class CurrencySystem {
     async addMoney(settings) {
         let data = await findUser(settings);
         if (!data) data = await makeUser(settings);
-        let check = String(settings.amount);
-        if (check.includes("-")) return {
+        if (String(settings.amount).includes("-")) return {
             error: true,
             type: 'negative-money'
         };
@@ -380,8 +385,7 @@ class CurrencySystem {
     async removeMoney(settings) {
         let data = await findUser(settings)
         if (!data) data = await makeUser(settings);
-        let check = String(settings.amount);
-        if (check.includes("-")) return {
+        if (String(settings.amount).includes("-")) return {
             error: true,
             type: 'negative-money'
         };

@@ -3,9 +3,8 @@ const Discord = require("discord.js");
 const cs = new CurrencySystem;
 
 exports.run = async (client, message, args) => {
-
-    let data = await cs.leaderboard(message.guild.id);
-    if (data.length < 1) return message.channel.send("Nobody's in leaderboard yet.");
+    let data = await cs.globalLeaderboard();
+    if (data.length < 1) return message.channel.send("Nobody's in Global leaderboard yet.");
     const msg = new Discord.MessageEmbed();
     let pos = 0;
     // This is to get First 10 Users )
@@ -16,13 +15,14 @@ exports.run = async (client, message, args) => {
     });
 
     message.channel.send(msg).catch();
+
 }
 
 exports.help = {
-    name: "leaderboard",
-    description: "show's guild leaderboard.",
-    usage: "leaderboard",
-    example: "leaderboard"
+    name: "global-lb",
+    description: "show's Global leaderboard.",
+    usage: "global-lb",
+    example: "global-lb"
 }
 
 exports.conf = {
