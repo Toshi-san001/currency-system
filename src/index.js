@@ -41,7 +41,7 @@ class CurrencySystem {
     async gamble(settings) {
 
         let data = await findUser(settings)
-        if (!data) data = await makeUser(settings);
+        if (!data) data = await makeUser(this, settings);
 
         const money = settings.amount;
         const result = Math.floor(Math.random() * 10);
@@ -99,7 +99,7 @@ class CurrencySystem {
 
     async withdraw(settings) {
         let data = await findUser(settings)
-        if (!data) data = await makeUser(settings);
+        if (!data) data = await makeUser(this, settings);
 
         const money = settings.amount;
         const bank = data.bank;
@@ -151,7 +151,7 @@ class CurrencySystem {
 
     async deposite(settings) {
         let data = await findUser(settings)
-        if (!data) data = await makeUser(settings);
+        if (!data) data = await makeUser(this, settings);
 
         const money = settings.amount;
         const wallet = data.wallet;
@@ -212,7 +212,7 @@ class CurrencySystem {
 
     async balance(settings) {
         let data = await findUser(settings)
-        if (!data) data = await makeUser(settings);
+        if (!data) data = await makeUser(this, settings);
 
         return {
             bank: data.bank,
@@ -249,7 +249,7 @@ class CurrencySystem {
 
     async work(settings) {
         let data = await findUser(settings)
-        if (!data) data = await makeUser(settings);
+        if (!data) data = await makeUser(this, settings);
 
         let lastWork = data.lastWork;
         let timeout = settings.cooldown;
@@ -284,13 +284,13 @@ class CurrencySystem {
 
     async rob(settings) {
         let user1 = await findUser(settings)
-        if (!user1) user1 = await makeUser(settings);
+        if (!user1) user1 = await makeUser(this, settings);
 
         let user2 = await cs.findOne({
             userID: settings.user2.id,
             guildID: settings.guild.id || false
         });
-        if (!user2) user2 = await makeUser(settings, true)
+        if (!user2) user2 = await makeUser(this, settings, true)
 
         let lastRob = user1.lastRob;
         let timeout = settings.cooldown;
@@ -358,7 +358,7 @@ class CurrencySystem {
 
     async addMoney(settings) {
         let data = await findUser(settings);
-        if (!data) data = await makeUser(settings);
+        if (!data) data = await makeUser(this, settings);
         if (String(settings.amount).includes("-")) return {
             error: true,
             type: 'negative-money'
@@ -384,7 +384,7 @@ class CurrencySystem {
 
     async removeMoney(settings) {
         let data = await findUser(settings)
-        if (!data) data = await makeUser(settings);
+        if (!data) data = await makeUser(this, settings);
         if (String(settings.amount).includes("-")) return {
             error: true,
             type: 'negative-money'
@@ -410,13 +410,13 @@ class CurrencySystem {
 
     async transferMoney(settings) {
         let user1 = await findUser(settings)
-        if (!user1) user1 = await makeUser(settings);
+        if (!user1) user1 = await makeUser(this, settings);
 
         let user2 = await cs.findOne({
             userID: settings.user2.id,
             guildID: settings.guild.id || false
         });
-        if (!user2) user2 = await makeUser(settings, true)
+        if (!user2) user2 = await makeUser(this, settings, true)
         let money = parseInt(settings.amount)
         if (user1.wallet < money) return {
             error: true,
@@ -437,13 +437,13 @@ class CurrencySystem {
 
     /* async addItem(settings) {
         let user1 = await findUser(settings)
-        if (!user1) user1 = await makeUser(settings);
+        if (!user1) user1 = await makeUser(this, settings);
 
         let user2 = await cs.findOne({
             userID: settings.user2.id,
             guildID: settings.guild.id
         });
-        if (!user2) user2 = await makeUser(settings, true)
+        if (!user2) user2 = await makeUser(this, settings, true)
         
     }; */
 };
@@ -458,14 +458,14 @@ async function findUser(settings) {
     return find;
 };
 
-async function makeUser(settings, user2 = false) {
+async function makeUser(that, settings, user2 = false) {
     let user = settings.user.id
     if (user2) user = settings.user2.id;
     const newUser = new cs({
         userID: user,
         guildID: settings.guild.id || false,
-        wallet: this.wallet || 0,
-        bank: this.bank || 0,
+        wallet: that.wallet || 0,
+        bank: that.bank || 0,
         inventory: "nothing",
         lastUpdated: new Date(),
         lastGamble: 0,
