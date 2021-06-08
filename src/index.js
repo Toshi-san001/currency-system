@@ -624,7 +624,7 @@ class CurrencySystem {
         let data = await findUser(settings)
         if (!data) data = await makeUser(this, settings);
         console.log(data.inventory)
-       // console.log(inventoryData.inventory)
+        // console.log(inventoryData.inventory)
         let thing = parseInt(settings.item);
         if (!thing) return {
             error: true,
@@ -725,7 +725,7 @@ async function makeUser(that, settings, user2 = false) {
     if (user2) user = settings.user2.id;
     const newUser = new cs({
         userID: user,
-        guildID: settings.guild.id || fanulllse,
+        guildID: settings.guild.id || null,
         wallet: that.wallet || 0,
         bank: that.bank || 0
     });
