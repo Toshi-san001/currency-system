@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const {
     settingFunction
-} = require("@silent-coder/discord-cmd-handler");
+} = require("@silent-coder/discord-cmd-handler")
 exports.run = async (client, message, args) => {
     let prefix = settingFunction().prefix;
     if (!args[0]) {
@@ -10,28 +10,28 @@ exports.run = async (client, message, args) => {
 
         // This will hide a folder from display that includes "hide: true" in their module.json
         if (!settingFunction().owners.includes(message.author.id)) module = client.helps.array().filter(x => !x.hide);
-        require("fs").readdir(require("path").join(__dirname, `./../`), (err, categories) => {
-            const embed = new Discord.MessageEmbed()
-                .setColor(0x1d1d1d)
-                .setTimestamp(new Date())
-                .setDescription(`Type \`${prefix}help [command]\` to get more specific information about a command.`)
-                .setTitle("CurrencySystem Bot")
-                .setAuthor("Bot made by Be Intelligent.!!")
-                .setFooter(
-                    "Requested by " + message.author.username,
-                    message.author.displayAvatarURL({
-                        format: "png",
-                        dynamic: true
-                    })
-                )
-            for (let i = 0; i < categories.length; i++) {
-                for (let mod of module) {
-                    // You can change the .join(" | ") to commas, dots or every symbol.          
-                    embed.addField(`${categories[i]}`, `${mod.cmds.map(x => `\`${x}\``).join(" | ") || "No Commands Found!"}`);
-                }
-            }
-            return message.channel.send(embed);
-        });
+
+        const embed = new Discord.MessageEmbed()
+            .setColor(0x1d1d1d)
+            .setTimestamp(new Date())
+            .setDescription(`Type \`${prefix}help [command]\` to get more specific information about a command.`)
+            .setTitle("My Bot")
+            .setAuthor("Bot made by Me.!!")
+            .setFooter(
+                "Requested by " + message.author.username,
+                message.author.displayAvatarURL({
+                    format: "png",
+                    dynamic: true
+                })
+            )
+        let i = 0;
+        for (const mod of module) {
+            // You can change the .join(" | ") to commas, dots or every symbol.
+            embed.addField(mod.name, mod.cmds.map(x => `\`${x}\``).join(" | "));
+            i++
+        };
+        return message.channel.send(embed);
+
 
 
 

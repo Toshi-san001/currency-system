@@ -4,12 +4,16 @@ const {
 } = require("@silent-coder/discord-cmd-handler");
 const Discord = require("discord.js")
 const client = new Discord.Client();
-
+const {
+    token,
+    mongourl
+} = require("./config.json");
 const CurrencySystem = require("currency-system");
+
 const cs = new CurrencySystem;
-client.login("LOGIN");
+client.login(token);
 //sets mongo url
-cs.setMongoURL("MONGO URL");
+cs.setMongoURL(mongourl);
 //sets default wallet amount when ever new user is created.
 cs.setDefaultWalletAmount(100)
 //sets default bank amount when ever new user is created.
@@ -31,10 +35,10 @@ client.on("ready", () => {
         EnableCommmandonEdit: true,
         mentionPrefix: true,
         prefix: "?",
-        owners: ["YOUR DISCORD ID", "YOUR TRUSTED FRIEND Discord ID"],
+        owners: ["544084793122488331", "YOUR TRUSTED FRIEND Discord ID"],
         path: __dirname + "/commands",
         logCommands: true
     });
     //This will load all commands.
 });
-process.on("unhandledRejection", _=> logger.error(_.stack+'\n' + '='.repeat(20)))
+process.on("unhandledRejection", _ => logger.error(_.stack + '\n' + '='.repeat(20)))

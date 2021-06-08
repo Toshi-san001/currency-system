@@ -13,6 +13,13 @@ cs.setDefaultWalletAmount('100');
 //sets default bank amount when ever new user is created.
 cs.setDefaultBankAmount('1000');
 ```
+# Global Economy
+To make it global, remove following line from every command 
+```js
+guild: message.guild,
+```
+# Important Changes
+I've added new commands like monthly daily quaterly, beg and so on. PLease visit  (Exmaple bot)[https://github.com/BIntelligent/currency-system/tree/main/ExampleBot] for those commands!
 ## AddMoney 
 # Example
 ```js
@@ -182,7 +189,7 @@ if (result.error) {
         cooldown: 25 //25 seconds,
 
     });
-    if (result.error) return message.channel.send(`You have already worked recently Try again in ${result.time.minutes}m ${result.time.seconds}s`);
+    if (result.error) return message.channel.send(`You have already worked recently Try again in ${result.time}`);
     else message.channel.send(`You worked as a ${result.workType} and earned $${result.amount}.`)
 ```
 ## Gamble 

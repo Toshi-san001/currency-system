@@ -9,9 +9,9 @@
   "author": "BIntelligent",
   "license": "ISC",
   "dependencies": {
-    "@silent-coder/discord-cmd-handler": "*",
+    "@silent-coder/discord-cmd-handler": "^2.2.0",
     "currency-system": "file:..",
     "discord.js": "^12.5.1",
-    "mongoose": "^5.12.12"
+    "mongoose": "^5.0.0"
   }
 }

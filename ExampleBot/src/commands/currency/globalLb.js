@@ -26,6 +26,6 @@ exports.help = {
 }
 
 exports.conf = {
-    aliases: ["lb"],
+    aliases: ["glb"],
     cooldown: 5
 }
