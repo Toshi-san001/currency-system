@@ -13,6 +13,11 @@ cs.setDefaultWalletAmount('100');
 //sets default bank amount when ever new user is created.
 cs.setDefaultBankAmount('1000');
 ```
+# NEW!
+ADDED inventory system. Please see example bot for its code.
+Added: setItems, sell, buy, additems, removeItems, shop, inventory 
+# Bug reports
+Dm me on discord: `Be Intelligent#7330`.
 # Global Economy
 To make it global, remove following line from every command 
 ```js
@@ -253,6 +258,3 @@ message.channel.send(msg).catch();
 
     message.channel.send(msg).catch();
 ```
-
-# Todo list
-1. Add inventory system idk how but i will 

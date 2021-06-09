@@ -12,7 +12,7 @@
         }
         if (!message.member.hasPermission('ADMINISTRATOR')) return message.channel.send("You do not have requied permissions.")
         let wheretoPutMoney = args[2] || "wallet"; //or bank
-        let amount = args[1];
+        let amount = parseInt(args[1]);
         if (!amount) return message.channel.send("Enter amount of money to add.");
         let money = parseInt(amount);
         let result = await cs.addMoney({

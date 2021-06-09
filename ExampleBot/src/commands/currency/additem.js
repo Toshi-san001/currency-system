@@ -1,42 +1,43 @@
+const Discord = require('discord.js')
 const CurrencySystem = require("currency-system");
 const cs = new CurrencySystem;
 exports.run = async (client, message, args) => {
-/* let user;
-if (message.mentions.users.first()) {
-    user = message.mentions.users.first();
-} else if (args[0]) {
-                user = message.guild.members.cache.get(args[0]);
-            if (user) user = user.user;;
-} else {
-    user.id = "1"
-}
+    message.channel.send('What should be item name?');
+    let Name = await message.channel.awaitMessages(msg => msg.author.id == message.author.id, {
+        max: 1
+    });
 
-if (user.bot || user === client.user) return message.channel.send("This user is a bot.");
-if (!client.users.cache.get(user.id) || !user) return message.channel.send('Sorry, you forgot to mention somebody.');
+    message.channel.send('What should be its price?');
+    let Price = await message.channel.awaitMessages(msg => msg.author.id == message.author.id, {
+        max: 1
+    });
+    let result = await cs.addItem({
+        guild: message.guild,
+        inventory: {
+            name: Name.first().content,
+            price: parseInt(Price.first().content)
+        }
+    });
+    if (result.error) {
+        if (result.type == 'No-Inventory-Name') return message.channel.send('There was a error, Please enter item name to removadd.!')
+        if (result.type == 'Invalid-Inventory-Price') return message.channel.send('There was a error, invalid price!')
+        if (result.type == 'No-Inventory-Price') return message.channel.send('There was a error, You didnt specify price!')
+        if (result.type == 'No-Inventory') return message.channel.send('There was a error, No data recieved!')
+    } else message.channel.send('Done! Successfully added `' + Name.first().content + '` to the shop!')
 
-let amount = args[1];
-if (!amount) return message.channel.send("Enter amount of money to add.");
-if (amount.includes("-")) return message.channel.send("You can't send negitive money.")
-let money = parseInt(amount);
 
-let result = await cs.transferMoney({
-    user: message.author,
-    user2: user,
-    guild: message.guild,
-    amount: money
-}); */
-message.channel.send(result);
+
 }
 
 exports.help = {
-name: "additem",
-description: "A way to add additem",
-usage: "additem @user <item>",
-example: "additem <user> <item>"
+    name: "additem",
+    description: "A way to additem to shop",
+    example: "additem",
+    usage: "additem"
 };
 
 exports.conf = {
-aliases: ["ai"],
-cooldown: 5 // This number is a seconds, not a milliseconds.
-// 1 = 1 seconds.
+    aliases: [],
+    cooldown: 5 // This number is a seconds, not a milliseconds.
+    // 1 = 1 seconds.
 }
