@@ -1,6 +1,6 @@
 {
   "name": "currency-system",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "An easy to use Currency System using Mongoose.",
   "main": "src/index.js",
   "scripts": {
