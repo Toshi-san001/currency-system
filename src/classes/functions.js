@@ -706,7 +706,9 @@ async function makeUser(that, settings, user2 = false) {
 
 };
 async function saveUser(data) {
-    await sleep(500)
+    // this will prevent error
+    // ParallelSaveError: Can't save() the same doc multiple times in parallel.
+    await sleep(Math.floor((Math.random() * 10) + 1) * 100) // 100 - 1000 random  Number generator
     await data.save(function (err) {
         if (err) throw err;
     });
