@@ -79,7 +79,7 @@ async function gamble(settings) {
             wallet: data.wallet
         };
     };
-    saveUser(data);
+    await saveUser(data);
 };
 
 
@@ -217,10 +217,25 @@ async function leaderboard(guildid, sortBy = 'bank') {
     return data;
 };
 async function globalLeaderboard(sortBy = 'bank') {
-    let data = await cs.find().sort([
+
+    let array = await cs.find();
+    var output = [];
+    array.forEach(function (item) {
+        var existing = output.filter(function (v, i) {
+            return v.userID == item.userID;
+        });
+        if (existing.length) {
+            var existingIndex = output.indexOf(existing[0]);
+            output[existingIndex].bank = output[existingIndex].bank + item.bank
+            output[existingIndex].wallet = output[existingIndex].wallet + item.wallet
+        } else {
+            output.push(item);
+        }
+    });
+    output.sort([
         [sortBy, 'descending']
-    ]).exec();
-    return data;
+    ]).exec()
+    return output;
 };
 
 /**
@@ -691,6 +706,7 @@ async function makeUser(that, settings, user2 = false) {
 
 };
 async function saveUser(data) {
+    await sleep(500)
     await data.save(function (err) {
         if (err) throw err;
     });
@@ -722,6 +738,12 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
         });
     });
 };
+
+function sleep(milliseconds) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, milliseconds);
+    });
+};
 module.exports = {
     setDefaultWalletAmount,
     setDefaultBankAmount,
@@ -750,5 +772,6 @@ module.exports = {
     saveUser,
     getInventory,
     makeInventory,
-    updateInventory
+    updateInventory,
+    sleep
 }

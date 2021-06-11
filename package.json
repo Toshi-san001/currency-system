@@ -1,10 +1,11 @@
 {
   "name": "currency-system",
-  "version": "2.3.3",
-  "description": "An easy to use Currency System using Mongoose.",
+  "version": "2.3.4",
+  "description": "An easy to use Currency System using Mongo DB.",
   "main": "src/index.js",
   "scripts": {
-    "doc": "jsdoc -c jsdoc.json"
+    "doc": "jsdoc -c jsdoc.json",
+    "start": "npm i && cd ./ExampleBot && npm test"
   },
   "repository": {
     "type": "git",
