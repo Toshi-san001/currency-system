@@ -37,7 +37,7 @@ client.on("ready", () => {
         prefix: "?",
         owners: ["544084793122488331", "YOUR TRUSTED FRIEND Discord ID"],
         path: __dirname + "/commands",
-        logCommands: true
+        logCommands: false
     });
     //This will load all commands.
 });
