@@ -6,7 +6,8 @@ ADDED inventory system. Please see example bot for its code.
 
 Added: setItems, sell, buy, additems, removeItems, shop, inventory 
 
-Added: Update notifier. ![image](https://user-images.githubusercontent.com/65684589/121766693-6289bd80-cb6d-11eb-8a9f-d99d029ae0f0.png)
+Added: Update notifier.
+ ![image](https://user-images.githubusercontent.com/65684589/121766693-6289bd80-cb6d-11eb-8a9f-d99d029ae0f0.png)
 
 # Bug reports
 Dm me on discord: `Be Intelligent#7330`.
