@@ -103,7 +103,7 @@ async function withdraw(settings) {
         type: 'low-money'
     };
 
-    if (money === 'all') {
+    if (money === 'all' || money === 'max') {
         if (bank === 0) return {
             error: true,
             type: 'no-money'
@@ -156,7 +156,7 @@ async function deposite(settings) {
     };
 
 
-    if (money === 'all') {
+    if (money === 'all' || money === 'max') {
 
         if (wallet === 0) return {
             error: true,
