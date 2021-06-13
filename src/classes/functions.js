@@ -216,7 +216,7 @@ async function leaderboard(guildid, sortBy = 'bank') {
     ]).exec();
     return data;
 };
-async function globalLeaderboard(sortBy = 'bank') {
+async function globalLeaderboard() {
 
     let array = await cs.find();
     var output = [];
@@ -232,9 +232,7 @@ async function globalLeaderboard(sortBy = 'bank') {
             output.push(item);
         }
     });
-    output.sort([
-        [sortBy, 'descending']
-    ]).exec()
+    output.sort((a, b) => { return a.bank - b.bank })
     return output;
 };
 
