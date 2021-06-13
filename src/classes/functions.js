@@ -232,7 +232,9 @@ async function globalLeaderboard() {
             output.push(item);
         }
     });
-    output.sort((a, b) => { return a.bank - b.bank })
+    output.sort((a, b) => {
+        return b.bank - a.bank
+    })
     return output;
 };
 
