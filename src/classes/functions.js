@@ -208,12 +208,12 @@ async function balance(settings) {
  */
 
 
-async function leaderboard(guildid, sortBy = 'bank') {
+async function leaderboard(guildid, ) {
     let data = await cs.find({
         guildID: guildid
-    }).sort([
-        [sortBy, 'descending']
-    ]).exec();
+    }).sort((a, b) => {
+        return b.bank - a.bank
+    })
     return data;
 };
 async function globalLeaderboard() {
