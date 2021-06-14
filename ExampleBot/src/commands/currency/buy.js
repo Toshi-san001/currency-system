@@ -6,7 +6,7 @@ exports.run = async (client, message, args) => {
     let thing = args[0]
     if (!thing) return message.channel.send('Please provide item number')
     if (isNaN(thing)) return message.channel.send('Please provide valid item number')
-    message.channel.send(`Please type \`yes\` to confirm paying $${inventoryData.inventory[thing].price}`)
+    message.channel.send(`Please type \`yes\` to confirm paying`)
     let col = await message.channel.awaitMessages(msg => msg.author.id == message.author.id, {
         max: 1
     });
