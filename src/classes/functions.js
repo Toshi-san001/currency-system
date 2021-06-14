@@ -367,6 +367,34 @@ async function quaterly(settings) {
  * 
  * @param {object} settings  
  */
+async function hafly(settings) {
+    let data = await findUser(settings)
+    if (!data) data = await makeUser(this, settings);
+
+    let hafly = data.lastHafly;
+    let timeout = 43200;
+    if (hafly !== null && timeout - (Date.now() - hafly) / 1000 > 0) return {
+        error: true,
+        type: 'time',
+        time: parseSeconds(Math.floor(timeout - (Date.now() - hafly) / 1000))
+    };
+    else {
+        data.lastHafly = Date.now();
+        data.wallet = data.wallet + settings.amount;
+        await saveUser(data);
+
+        return {
+            error: false,
+            type: 'success',
+            amount: settings.amount
+        };
+
+    };
+};
+/**
+ * 
+ * @param {object} settings  
+ */
 
 
 async function daily(settings) {
@@ -785,6 +813,7 @@ module.exports = {
     monthly,
     weekly,
     quaterly,
+    hafly,
     daily,
     hourly,
     rob,
