@@ -18,7 +18,8 @@
             guild: message.guild,
             minAmount: 100,
             successPercentage: 5,
-            cooldown: 25 //25 seconds
+            cooldown: 25, //25 seconds,
+                maxRob: 1000
         });
         if (result.error) {
             if (result.type === 'time') return message.channel.send(`You have already robbed recently Try again in ${result.time}`);

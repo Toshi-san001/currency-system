@@ -468,7 +468,7 @@ async function rob(settings) {
 
     let user2 = await cs.findOne({
         userID: settings.user2.id,
-        guildID: settings.guild.id || false
+        guildID: settings.guild.id || null
     });
     if (!user2) user2 = await makeUser(this, settings, true)
 
@@ -481,19 +481,20 @@ async function rob(settings) {
         time: parseSeconds(Math.floor(timeout - (Date.now() - lastRob) / 1000))
     };
 
-    if (user1.wallet < settings.minAmount) return {
+    if (user1.wallet < (settings.minAmount - 2)) return {
         error: true,
         type: 'low-money',
         minAmount: settings.minAmount
     };
-    if (user2.wallet < settings.minAmount) return {
+    if (user2.wallet < (settings.minAmount - 2)) return {
         error: true,
         type: 'low-wallet',
         user2: settings.user2,
         minAmount: settings.minAmount
     };
-
-    let random = Math.floor(Math.random() * 1000) + 1; // random number 200-1, you can change 200 to whatever you'd like
+    let max = settings.maxRob;
+    if (!max || max < 1000) max = 1000
+    let random = Math.floor(Math.random() * (Math.floor(max || 1000) - 99)) + 99
     if (random > user2.wallet) random = user2.wallet;
 
     // 5 here is percentage of success.
@@ -574,11 +575,8 @@ async function addMoney(settings) {
         type: 'negative-money'
     };
     let amount = parseInt(settings.amount) || 0;
-    let wheretoPutMoney = data.wallet;
-    if (settings.wheretoPutMoney === "bank") wheretoPutMoney = data.bank;
-    else if (settings.wheretoPutMoney === "wallet") wheretoPutMoney = data.wallet;
-    if (wheretoPutMoney === data.wallet) data.wallet += amount;
-    if (wheretoPutMoney === data.bank) data.bank += amount;
+    if (settings.wheretoPutMoney === "bank") data.bank += amount
+    else data.wallet += amount
     await saveUser(data);
     return {
         error: false,
@@ -599,13 +597,13 @@ async function removeMoney(settings) {
         error: true,
         type: 'negative-money'
     };
-    let amount = parseInt(settings.amount) || 0;
-    let wheretoPutMoney = data.wallet;
-    if (settings.wheretoPutMoney === "bank") wheretoPutMoney = data.bank;
-    else if (settings.wheretoPutMoney === "wallet") wheretoPutMoney = data.wallet;
-
-    if (wheretoPutMoney === data.wallet) data.wallet -= amount;
-    if (wheretoPutMoney === data.bank) data.bank -= amount;
+    if (settings.wheretoPutMoney === "bank") {
+        if (settings.amount === 'all' || settings.amount === "max") data.bank = 0;
+        else data.bank -= parseInt(settings.amount) || 0;
+    } else {
+        if (settings.amount === 'all' || settings.amount === "max") data.wallet = 0;
+        else data.wallet -= parseInt(settings.amount) || 0;
+    }
     await saveUser(data);
     return {
         error: false,

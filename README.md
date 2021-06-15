@@ -10,7 +10,8 @@ Added: Update notifier.
  ![image](https://user-images.githubusercontent.com/65684589/121766693-6289bd80-cb6d-11eb-8a9f-d99d029ae0f0.png)
 
 # Bug reports
-Dm me on discord: `Be Intelligent#7330`.
+Join our [Support Server](https://discord.gg/fUaNwH9w58): 
+Package Made by: `Be Intelligent#7330`.
 # Docs
 📚 https://currency-system.js.org
 # For Global Economy
@@ -57,20 +58,22 @@ Click them to view more info about the methods.
 ## Money Earning Methods
 
 13. User can use it once per hour.
-[`hourly`](https://bintelligent.github.io/examples/currency-system/hourly)
+[`hourly`](https://bintelligent.github.io/currency-system/examples/hourly)
 14. User can use it once every 6 hours.
 [`quaterly`](https://bintelligent.github.io/currency-system/examples/quaterly)
-15. User can use it once every 24 hours.
+15. User can use it once every 12 hours.
+[`hafly`](https://bintelligent.github.io/currency-system/examples/hafly)
+16. User can use it once every 24 hours.
 [`daily`](https://bintelligent.github.io/currency-system/examples/daily)
-16. User can use it once every 7 days.
+17. User can use it once every 7 days.
 [`weekly`](https://bintelligent.github.io/currency-system/examples/weekly)
-17. User can use it once every month.
+18. User can use it once every month.
 [`monthly`](https://bintelligent.github.io/currency-system/examples/monthly)
-18. User can use it every x time. Which Bot Developor can set.
+19. User can use it every x time. Which Bot Developor can set.
 [`work`](https://bintelligent.github.io/currency-system/examples/work)
-19. Rob's a user and have 50-50 chance of getting his money.
+20. Rob's a user and have 50-50 chance of getting his money.
 [`rob`](https://bintelligent.github.io/currency-system/examples/rob)
-19. User can use it every x time. Which Bot Developor can set
+21. User can use it every x time. Which Bot Developor can set
 [`beg`](https://bintelligent.github.io/currency-system/examples/beg)
 
 # New!! 
