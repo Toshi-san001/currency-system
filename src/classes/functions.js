@@ -515,7 +515,7 @@ async function rob(settings) {
 
     } else {
         // Fail :(
-
+    if (random > user1.wallet) random = user1.wallet;
         user2.wallet = user2.wallet + random;
         user1.wallet = user1.wallet - random;
         await saveUser(user1);
