@@ -60,9 +60,10 @@ async function gamble(settings) {
         second: parseSeconds(Math.floor(cooldown - (Date.now() - lastGamble) / 1000))
     };
 
-    if (result < 5) {
+    if (result <= 5) {
         data.lastGamble = Date.now();
         data.wallet = data.wallet - parseInt(money);
+        await saveUser(data);
         return {
             error: false,
             type: 'lost',
@@ -72,6 +73,7 @@ async function gamble(settings) {
     } else if (result > 5) {
         data.lastGamble = Date.now();
         data.wallet = (data.wallet + parseInt(money));
+        await saveUser(data);
         return {
             error: false,
             type: 'won',
@@ -79,7 +81,6 @@ async function gamble(settings) {
             wallet: data.wallet
         };
     };
-    await saveUser(data);
 };
 
 
