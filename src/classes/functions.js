@@ -34,8 +34,7 @@ async function gamble(settings) {
     const result = Math.floor(Math.random() * 10);
     const balance = data.wallet;
     let lastGamble = data.lastGamble;
-    let cooldown = settings.cooldown || 5;
-    cooldown = cooldown * 1000;
+    let cooldown = settings.cooldown || 50;
     if (!parseInt(money)) return {
         error: true,
         type: 'amount'
