@@ -1,6 +1,6 @@
 {
   "name": "currency-system",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "description": "An easy to use Currency System using Mongo DB.",
   "main": "src/index.js",
   "scripts": {
@@ -32,7 +32,8 @@
   "author": "silent-coder",
   "license": "ISC",
   "dependencies": {
-    "mongoose": "^5.11.8"
+    "mongoose": "^5.11.8",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {}
-  }
+}

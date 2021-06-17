@@ -14,9 +14,13 @@ const {
       lastHourly: { type: Number, default: 0 },
       lastQuaterly: { type: Number, default: 0 },
       lastHafly: {
-        type: Number,
-        default: 0
-      },
+          type: Number,
+          default: 0
+        },
+        lastRob: {
+          type: Number,
+          default: 0
+        },
       lastDaily: { type: Number, default: 0 },
       lastWeekly: { type: Number, default: 0 },
       lastMonthly: { type: Number, default: 0 },

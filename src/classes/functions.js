@@ -496,7 +496,7 @@ async function rob(settings) {
     if (!max || max < 1000) max = 1000
     let random = Math.floor(Math.random() * (Math.floor(max || 1000) - 99)) + 99
     if (random > user2.wallet) random = user2.wallet;
-
+    user1.lastRob = Date.now();
     // 5 here is percentage of success.
     if (testChance(settings.successPercentage || 5)) {
         // Success!
@@ -515,7 +515,7 @@ async function rob(settings) {
 
     } else {
         // Fail :(
-    if (random > user1.wallet) random = user1.wallet;
+        if (random > user1.wallet) random = user1.wallet;
         user2.wallet = user2.wallet + random;
         user1.wallet = user1.wallet - random;
         await saveUser(user1);
