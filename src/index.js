@@ -1,3 +1,4 @@
+const fs = require('fs');
 /**
  * @author Silent-Coder
  * @license Apache-2.0
@@ -6,7 +7,6 @@
  */
 
 'use strict';
-let mongoURL;
 const {
     findUser,
     getInventory,
@@ -22,8 +22,12 @@ const {
 class CurrencySystem {
     setMongoURL(password) {
         if (!password.startsWith("mongodb+srv")) throw new TypeError("Invalid MongoURL");
-        connect(password)
-        mongoURL = password;
+        connect(password);
+        fs.writeFile("./classes/db.json", {
+            mongoURL: password
+        }, err => {
+            if (err) throw err;
+        });
 
     };
 
@@ -80,7 +84,7 @@ class CurrencySystem {
                     amount: 1
                 });
             };
-            await updateInventory(mongoURL, data.inventory, settings, "currencies");
+            await updateInventory(_getDbURL(), data.inventory, settings, "currencies");
             return {
                 error: false,
                 type: 'success',
@@ -113,7 +117,7 @@ class CurrencySystem {
             price: parseInt(settings.inventory.price) || 0,
         }
         inventoryData.inventory.push(item);
-        await updateInventory(mongoURL, inventoryData.inventory, settings)
+        await updateInventory(_getDbURL(), inventoryData.inventory, settings)
         return {
             error: false,
             item: item
@@ -135,7 +139,7 @@ class CurrencySystem {
         };
         const deletedDB = inventoryData.inventory[thing];
         inventoryData.inventory.splice(thing, 1);
-        await updateInventory(mongoURL, inventoryData.inventory, settings)
+        await updateInventory(_getDbURL(), inventoryData.inventory, settings)
 
         return {
             error: false,
@@ -161,7 +165,7 @@ class CurrencySystem {
                 type: 'Invalid-Shop-price'
             };
         }
-        await updateInventory(mongoURL, settings.shop, settings)
+        await updateInventory(_getDbURL(), settings.shop, settings)
 
         return {
             error: false,
@@ -205,7 +209,7 @@ class CurrencySystem {
         const deletedDB = data.inventory[thing];
         if (done == false) data.inventory.splice(thing, 1);
 
-        await updateInventory(mongoURL, data.inventory, settings, 'currencies')
+        await updateInventory(_getDbURL(), data.inventory, settings, 'currencies')
 
         return {
             error: false,
@@ -217,3 +221,6 @@ class CurrencySystem {
 
 Object.assign(CurrencySystem.prototype, require('./classes/functions'))
 module.exports = CurrencySystem;
+function _getDbURL() {
+    return JSON.parse(fs.readFileSync("./classes/db.json", "utf8")).mongoURL;
+}
