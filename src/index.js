@@ -23,11 +23,11 @@ class CurrencySystem {
     setMongoURL(password) {
         if (!password.startsWith("mongodb+srv")) throw new TypeError("Invalid MongoURL");
         connect(password);
-        fs.writeFile("/classes/db.json", {
+       /* fs.writeFile("/classes/db.json", {
             mongoURL: password
         }, err => {
             if (err) throw err;
-        });
+        }); */
 
     };
 
