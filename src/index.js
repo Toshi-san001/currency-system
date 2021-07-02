@@ -23,13 +23,11 @@ class CurrencySystem {
     setMongoURL(password) {
         if (!password.startsWith("mongodb+srv")) throw new TypeError("Invalid MongoURL");
         connect(password);
-       /* fs.writeFile("/classes/db.json", {
+        fs.writeFileSync(require("path").join(__dirname, "./classes/db.json"), JSON.stringify({
             mongoURL: password
-        }, err => {
-            if (err) throw err;
-        }); */
-
+        }));
     };
+
 
 
 
@@ -221,6 +219,7 @@ class CurrencySystem {
 
 Object.assign(CurrencySystem.prototype, require('./classes/functions'))
 module.exports = CurrencySystem;
+
 function _getDbURL() {
     return JSON.parse(fs.readFileSync("./classes/db.json", "utf8")).mongoURL;
 }

@@ -1,3 +1,5 @@
 ExampleBot
 documentation
 jsdoc.json
+package-lock.json
+db.json
