@@ -221,5 +221,5 @@ Object.assign(CurrencySystem.prototype, require('./classes/functions'))
 module.exports = CurrencySystem;
 
 function _getDbURL() {
-    return JSON.parse(fs.readFileSync("./classes/db.json", "utf8")).mongoURL;
+    return JSON.parse(fs.readFileSync(require("path").join(__dirname, "./classes/db.json"), "utf8")).mongoURL;
 }
