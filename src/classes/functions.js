@@ -62,6 +62,8 @@ async function gamble(settings) {
     if (result <= 5) {
         data.lastGamble = Date.now();
         data.wallet = data.wallet - parseInt(money);
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
         return {
             error: false,
@@ -72,6 +74,8 @@ async function gamble(settings) {
     } else if (result > 5) {
         data.lastGamble = Date.now();
         data.wallet = (data.wallet + parseInt(money));
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
         return {
             error: false,
@@ -110,6 +114,8 @@ async function withdraw(settings) {
         }
         data.wallet = data.wallet + data.bank;
         data.bank = 0;
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
         return {
             error: false,
@@ -120,6 +126,8 @@ async function withdraw(settings) {
 
         data.wallet = data.wallet + parseInt(money);
         data.bank = data.bank - parseInt(money);
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
         return {
             error: false,
@@ -165,6 +173,8 @@ async function deposite(settings) {
 
         data.bank = data.wallet + data.bank;
         data.wallet = 0;
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
         return {
             error: false,
@@ -176,6 +186,8 @@ async function deposite(settings) {
 
         data.wallet = data.wallet - parseInt(money);
         data.bank = data.bank + parseInt(money);
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
         return {
             error: false,
@@ -195,10 +207,12 @@ async function deposite(settings) {
 async function balance(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(this, settings);
-
+    if (!data.networth) data.networth = 0;
+    data.networth = data.wallet + data.bank;
     return {
         bank: data.bank,
-        wallet: data.wallet
+        wallet: data.wallet,
+            networth: data.networth
     }
 };
 
@@ -210,10 +224,10 @@ async function balance(settings) {
 
 async function leaderboard(guildid) {
     let data = await cs.find({
-        guildID: guildid
+        guildID: guildid || null
     });
     data.sort((a, b) => {
-        return b.bank - a.bank
+        return b.networth - a.networth
     })
     return data;
 };
@@ -234,7 +248,7 @@ async function globalLeaderboard() {
         }
     });
     output.sort((a, b) => {
-        return b.bank - a.bank
+        return b.networth - a.networth
     })
     return output;
 };
@@ -261,6 +275,8 @@ async function work(settings) {
         let amountt = Math.floor(Math.random() * settings.maxAmount || 100) + 1;
         data.lastWork = Date.now();
         data.wallet = data.wallet + amountt;
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
         let result = Math.floor((Math.random() * settings.replies.length));
         return {
@@ -292,6 +308,8 @@ async function monthly(settings) {
     else {
         data.lastMonthly = Date.now();
         data.wallet = data.wallet + settings.amount;
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
 
         return {
@@ -322,6 +340,8 @@ async function weekly(settings) {
     else {
         data.lastWeekly = Date.now();
         data.wallet = data.wallet + settings.amount;
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
 
         return {
@@ -353,6 +373,8 @@ async function quaterly(settings) {
     else {
         data.lastQuaterly = Date.now();
         data.wallet = data.wallet + settings.amount;
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
 
         return {
@@ -381,6 +403,8 @@ async function hafly(settings) {
     else {
         data.lastHafly = Date.now();
         data.wallet = data.wallet + settings.amount;
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
 
         return {
@@ -411,6 +435,8 @@ async function daily(settings) {
     else {
         data.lastDaily = Date.now();
         data.wallet = data.wallet + settings.amount;
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
 
         return {
@@ -442,6 +468,8 @@ async function hourly(settings) {
     else {
         data.lastHourly = Date.now();
         data.wallet = data.wallet + settings.amount;
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
 
         return {
@@ -518,6 +546,10 @@ async function rob(settings) {
         if (random > user1.wallet) random = user1.wallet;
         user2.wallet = user2.wallet + random;
         user1.wallet = user1.wallet - random;
+        if (!user1.networth) user1.networth = 0;
+        user1.networth = user1.wallet + user1.bank;
+        if (!user2.networth) user2.networth = 0;
+        user2.networth = user2.wallet + user2.bank;
         await saveUser(user1);
         await saveUser(user2);
         return {
@@ -551,6 +583,8 @@ async function beg(settings) {
         let amountt = Math.floor(Math.random() * (settings.maxAmount || 400)) + (settings.minAmount || 200)
         data.lastBegged = Date.now();
         data.wallet = data.wallet + amountt;
+        if (!data.networth) data.networth = 0;
+        data.networth = data.wallet + data.bank;
         await saveUser(data);
 
         return {
@@ -577,6 +611,8 @@ async function addMoney(settings) {
     let amount = parseInt(settings.amount) || 0;
     if (settings.wheretoPutMoney === "bank") data.bank += amount
     else data.wallet += amount
+    if (!data.networth) data.networth = 0;
+    data.networth = data.wallet + data.bank;
     await saveUser(data);
     return {
         error: false,
@@ -604,6 +640,8 @@ async function removeMoney(settings) {
         if (settings.amount === 'all' || settings.amount === "max") data.wallet = 0;
         else data.wallet -= parseInt(settings.amount) || 0;
     }
+    if (!data.networth) data.networth = 0;
+    data.networth = data.wallet + data.bank;
     await saveUser(data);
     return {
         error: false,
@@ -635,6 +673,10 @@ async function transferMoney(settings) {
 
     user1.wallet = user1.wallet - money;
     user2.wallet = user2.wallet + money;
+    if (!user1.networth) user1.networth = 0;
+    user1.networth = user1.wallet + user1.bank;
+    if (!user2.networth) user2.networth = 0;
+    user2.networth = user2.wallet + user2.bank;
     saveUser(user1);
     saveUser(user2);
     return {

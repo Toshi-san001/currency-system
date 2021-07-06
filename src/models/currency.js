@@ -8,6 +8,10 @@ const {
       guildID: { type: String },
       wallet: { type: Number, default: 0 },
       bank: { type: Number, default: 0 },
+      networth: {
+        type: Number,
+        default: 0
+      },
       inventory: { type: Array },
       lastUpdated: { type: Date, default: new Date() },
       lastGamble: { type: Number, default: 0 },
