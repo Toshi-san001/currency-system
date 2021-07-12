@@ -556,8 +556,8 @@ async function removeMoney(settings) {
     };
 };
 async function info(userID, guildID) {
-        let data = await findUser({}, userID, guildID)
-        if (!data) data = await makeUser({}, userID, guildID);
+    let data = await findUser({}, userID, guildID)
+    if (!data) data = await makeUser({}, userID, guildID);
 
     let lastHourlyy = true;
     let lastHaflyy = true;
@@ -576,16 +576,37 @@ async function info(userID, guildID) {
     return {
         error: false,
         info: {
-            lastHourly: lastHourlyy,
-            lastHafly: lastHaflyy,
-            lastDaily: lastDailyy,
-            lastWeekly: lastWeeklyy,
-            lastMonthly: lastMonthlyy,
-            lastBegged: lastBeggedy,
-            lastQuaterly: lastQuaterlyy
+            lastHourly: {
+                    used: lastHourlyy,
+                    timeLeft: parseSeconds(Math.floor(3600 - (Date.now() - data.lastHourly) / 1000))
+                },
+                lastHafly: {
+                    used: lastHaflyy,
+                    timeLeft: parseSeconds(Math.floor(43200 - (Date.now() - data.lastHafly) / 1000))
+                },
+                lastDaily: {
+                    used: lastDailyy,
+                    timeLeft: parseSeconds(Math.floor(86400 - (Date.now() - data.lastDaily) / 1000))
+                },
+                lastWeekly: {
+                    used: lastWeeklyy,
+                    timeLeft: parseSeconds(Math.floor(604800 - (Date.now() - data.lastWeekly) / 1000))
+                },
+                lastMonthly: {
+                    used: lastMonthlyy,
+                    timeLeft: parseSeconds(Math.floor(2.592e+6 - (Date.now() - data.lastMonthly) / 1000))
+                },
+                lastBegged: {
+                    used: lastBeggedy,
+                    timeLeft: parseSeconds(Math.floor(240 - (Date.now() - data.lastBegged) / 1000))
+                },
+                lastQuaterly: {
+                    used: lastQuaterlyy,
+                    timeLeft: parseSeconds(Math.floor(12600 - (Date.now() - data.lastQuaterly) / 1000))
+                }
         }
     }
-    }
+}
 async function transferMoney(settings) {
     if (!settings.guild) settings.guild = {
         id: null
@@ -637,6 +658,7 @@ async function getShopItems(settings) {
 };
 
 function parseSeconds(seconds) {
+    if (String(seconds).includes('-')) return '0 Seconds'
     let days = parseInt(seconds / 86400);
     seconds = seconds % 86400;
     let hours = parseInt(seconds / 3600);
@@ -666,7 +688,7 @@ async function findUser(settings, uid, gid) {
     }
     let find = await cs.findOne({
         userID: uid || settings.user.id,
-            guildID: gid || settings.guild.id || null
+        guildID: gid || settings.guild.id || null
     });
     return find;
 };
@@ -699,7 +721,7 @@ async function makeUser(settings, user2 = false, uid, gid) {
     const newUser = new cs({
         userID: user,
         guildID: gid || settings.guild.id || null,
-            wallet: wallet || 0,
+        wallet: wallet || 0,
             bank: bank || 0
     });
     await saveUser(newUser);
