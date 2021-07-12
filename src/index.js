@@ -36,7 +36,7 @@ class CurrencySystem {
         if (!inventoryData) inventoryData = await makeInventory(settings);
 
         let data = await findUser(settings)
-        if (!data) data = await makeUser(this, settings);
+        if (!data) data = await makeUser(settings);
         if (!settings.guild) settings.guild = {
             id: null
         }

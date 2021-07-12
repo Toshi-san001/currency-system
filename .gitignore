@@ -2,3 +2,4 @@ node_modules
 credentails.txt
 package-lock.json
 db.json
+src/classes/db.json

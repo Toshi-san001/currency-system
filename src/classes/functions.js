@@ -28,7 +28,7 @@ function connect(that) {
 async function gamble(settings) {
 
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     const money = settings.amount;
     const result = Math.floor(Math.random() * 10);
@@ -85,11 +85,9 @@ async function gamble(settings) {
         };
     };
 };
-
-
 async function withdraw(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     const money = settings.amount;
     const bank = data.bank;
@@ -136,16 +134,9 @@ async function withdraw(settings) {
         };
     }
 };
-
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function deposite(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     const money = settings.amount;
     const wallet = data.wallet;
@@ -197,31 +188,17 @@ async function deposite(settings) {
 
     }
 };
-
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function balance(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
     if (!data.networth) data.networth = 0;
     data.networth = data.wallet + data.bank;
     return {
         bank: data.bank,
         wallet: data.wallet,
-            networth: data.networth
+        networth: data.networth
     }
 };
-
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function leaderboard(guildid) {
     let data = await cs.find({
         guildID: guildid || null
@@ -252,16 +229,9 @@ async function globalLeaderboard() {
     })
     return output;
 };
-
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function work(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     let lastWork = data.lastWork;
     let timeout = settings.cooldown;
@@ -288,15 +258,9 @@ async function work(settings) {
 
     };
 };
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function monthly(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     let monthly = data.lastMonthly;
     let timeout = 2.592e+6;
@@ -320,15 +284,9 @@ async function monthly(settings) {
 
     };
 };
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function weekly(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     let weekly = data.lastWeekly;
     let timeout = 604800;
@@ -352,16 +310,9 @@ async function weekly(settings) {
 
     };
 };
-
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function quaterly(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     let quaterly = data.lastQuaterly;
     let timeout = 21600;
@@ -385,13 +336,9 @@ async function quaterly(settings) {
 
     };
 };
-/**
- * 
- * @param {object} settings  
- */
 async function hafly(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     let hafly = data.lastHafly;
     let timeout = 43200;
@@ -412,18 +359,11 @@ async function hafly(settings) {
             type: 'success',
             amount: settings.amount
         };
-
     };
 };
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function daily(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     let daily = data.lastDaily;
     let timeout = 86400;
@@ -447,16 +387,9 @@ async function daily(settings) {
 
     };
 };
-
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function hourly(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     let lastHourly = data.lastHourly;
     let timeout = 3600;
@@ -480,25 +413,18 @@ async function hourly(settings) {
 
     };
 };
-
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function rob(settings) {
     if (!settings.guild) settings.guild = {
         id: null
     }
     let user1 = await findUser(settings)
-    if (!user1) user1 = await makeUser(this, settings);
+    if (!user1) user1 = await makeUser(settings);
 
     let user2 = await cs.findOne({
         userID: settings.user2.id,
         guildID: settings.guild.id || null
     });
-    if (!user2) user2 = await makeUser(this, settings, true)
+    if (!user2) user2 = await makeUser(settings, true)
 
     let lastRob = user1.lastRob;
     let timeout = settings.cooldown;
@@ -562,15 +488,9 @@ async function rob(settings) {
     };
 
 };
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function beg(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
 
     let beg = data.lastBegged; // XDDDD
     let timeout = 240;
@@ -595,15 +515,9 @@ async function beg(settings) {
 
     };
 };
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function addMoney(settings) {
     let data = await findUser(settings);
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
     if (String(settings.amount).includes("-")) return {
         error: true,
         type: 'negative-money'
@@ -619,16 +533,9 @@ async function addMoney(settings) {
         type: 'success'
     };
 };
-
-/**
- * 
- * @param {object} settings  
- */
-
-
 async function removeMoney(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
     if (String(settings.amount).includes("-")) return {
         error: true,
         type: 'negative-money'
@@ -648,23 +555,49 @@ async function removeMoney(settings) {
         type: 'success'
     };
 };
+async function info(userID, guildID) {
+        let data = await findUser({}, userID, guildID)
+        if (!data) data = await makeUser({}, userID, guildID);
 
-/**
- * 
- * @param {object} settings  
- */
+    let lastHourlyy = true;
+    let lastHaflyy = true;
+    let lastDailyy = true;
+    let lastWeeklyy = true;
+    let lastMonthlyy = true;
+    let lastBeggedy = true;
+    let lastQuaterlyy = true;
+    if (data.lastBegged !== null && 240 - (Date.now() - data.lastBegged) / 1000 > 0) lastBeggedy = false;
+    if (data.lastHourly !== null && 3600 - (Date.now() - data.lastHourly) / 1000 > 0) lastHourlyy = false;
+    if (data.lastDaily !== null && 86400 - (Date.now() - data.lastDaily) / 1000 > 0) lastDailyy = false;
+    if (data.lastHafly !== null && 43200 - (Date.now() - data.lastHafly) / 1000 > 0) lastHaflyy = false;
+    if (data.lastQuaterly !== null && 12600 - (Date.now() - data.lastQuaterly) / 1000 > 0) lastQuaterlyy = false;
+    if (data.lastWeekly !== null && 604800 - (Date.now() - data.lastWeekly) / 1000 > 0) lastWeeklyy = false;
+    if (data.lastMonthly !== null && 2.592e+6 - (Date.now() - data.lastMonthly) / 1000 > 0) lastMonthlyy = false;
+    return {
+        error: false,
+        info: {
+            lastHourly: lastHourlyy,
+            lastHafly: lastHaflyy,
+            lastDaily: lastDailyy,
+            lastWeekly: lastWeeklyy,
+            lastMonthly: lastMonthlyy,
+            lastBegged: lastBeggedy,
+            lastQuaterly: lastQuaterlyy
+        }
+    }
+    }
 async function transferMoney(settings) {
     if (!settings.guild) settings.guild = {
         id: null
     }
     let user1 = await findUser(settings)
-    if (!user1) user1 = await makeUser(this, settings);
+    if (!user1) user1 = await makeUser(settings);
 
     let user2 = await cs.findOne({
         userID: settings.user2.id,
         guildID: settings.guild.id || false
     });
-    if (!user2) user2 = await makeUser(this, settings, true)
+    if (!user2) user2 = await makeUser(settings, true)
     let money = parseInt(settings.amount)
     if (user1.wallet < money) return {
         error: true,
@@ -688,7 +621,7 @@ async function transferMoney(settings) {
 };
 async function getUserItems(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(this, settings);
+    if (!data) data = await makeUser(settings);
     return {
         error: false,
         inventory: data.inventory
@@ -696,7 +629,7 @@ async function getUserItems(settings) {
 };
 async function getShopItems(settings) {
     let data = await getInventory(settings)
-    if (!data) data = await makeInventory(this, settings);
+    if (!data) data = await makeInventory(settings);
     return {
         error: false,
         inventory: data.inventory
@@ -721,20 +654,19 @@ function parseSeconds(seconds) {
 
     return `${seconds} second(s)`
 };
-
 // This is for Rob Command
 function testChance(successPercentage) {
     let random2 = Math.random() * 10;
     return ((random2 -= successPercentage) < 0);
 };
 // Basic Functions
-async function findUser(settings) {
+async function findUser(settings, uid, gid) {
     if (!settings.guild) settings.guild = {
         id: null
     }
     let find = await cs.findOne({
-        userID: settings.user.id,
-        guildID: settings.guild.id || null
+        userID: uid || settings.user.id,
+            guildID: gid || settings.guild.id || null
     });
     return find;
 };
@@ -758,17 +690,17 @@ async function makeInventory(settings) {
     await saveUser(inventory);
     return inventory;
 };
-async function makeUser(that, settings, user2 = false) {
+async function makeUser(settings, user2 = false, uid, gid) {
     if (!settings.guild) settings.guild = {
         id: null
     }
-    let user = settings.user.id
+    let user = uid || settings.user.id
     if (user2) user = settings.user2.id;
     const newUser = new cs({
         userID: user,
-        guildID: settings.guild.id || null,
-        wallet: that.wallet || 0,
-        bank: that.bank || 0
+        guildID: gid || settings.guild.id || null,
+            wallet: wallet || 0,
+            bank: bank || 0
     });
     await saveUser(newUser);
     return newUser;
@@ -869,5 +801,6 @@ module.exports = {
     getInventory,
     makeInventory,
     updateInventory,
-    sleep
+    sleep,
+    info
 }
