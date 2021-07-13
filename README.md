@@ -2,16 +2,10 @@
 This will go through all functions with example's
 See https://github.com/BIntelligent/currency-system/tree/main/ExampleBot for a Example bot.
 # NEW!
-ADDED inventory system. Please see example bot for its code.
-
-Added: setItems, sell, buy, additems, removeItems, shop, inventory 
-
-Added: Update notifier.
- ![image](https://user-images.githubusercontent.com/65684589/121766693-6289bd80-cb6d-11eb-8a9f-d99d029ae0f0.png)
-
+ADDED Info command!
 # Bug reports
-Join our [Support Server](https://discord.gg/fUaNwH9w58): 
-Package Made by: `Be Intelligent#7330`.
+Join our [Support Server](https://discord.gg/stERZwjA9m): 
+Package Made by: `Be Intelligent#0001`.
 # Docs
 📚 https://currency-system.js.org
 # For Global Economy
@@ -92,3 +86,5 @@ Click them to view more info about the methods.
 [`buy`](https://bintelligent.github.io/currency-system/examples/buy)
 26. Sell Command for User's to Sell items.
 [`removeUserItem`](https://bintelligent.github.io/currency-system/examples/removeUserItem)
+27. This tell's the about a user on what command he used already.
+[`info`](https://bintelligent.github.io/currency-system/examples/info)

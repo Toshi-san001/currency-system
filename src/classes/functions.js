@@ -575,36 +575,36 @@ async function info(userID, guildID) {
     if (data.lastMonthly !== null && 2.592e+6 - (Date.now() - data.lastMonthly) / 1000 > 0) lastMonthlyy = false;
     return {
         error: false,
-        info: {
+        info: Object.entries({
             lastHourly: {
-                    used: lastHourlyy,
+                used: lastHourlyy,
                     timeLeft: parseSeconds(Math.floor(3600 - (Date.now() - data.lastHourly) / 1000))
                 },
                 lastHafly: {
-                    used: lastHaflyy,
-                    timeLeft: parseSeconds(Math.floor(43200 - (Date.now() - data.lastHafly) / 1000))
-                },
-                lastDaily: {
-                    used: lastDailyy,
-                    timeLeft: parseSeconds(Math.floor(86400 - (Date.now() - data.lastDaily) / 1000))
-                },
-                lastWeekly: {
-                    used: lastWeeklyy,
-                    timeLeft: parseSeconds(Math.floor(604800 - (Date.now() - data.lastWeekly) / 1000))
-                },
-                lastMonthly: {
-                    used: lastMonthlyy,
-                    timeLeft: parseSeconds(Math.floor(2.592e+6 - (Date.now() - data.lastMonthly) / 1000))
-                },
-                lastBegged: {
-                    used: lastBeggedy,
-                    timeLeft: parseSeconds(Math.floor(240 - (Date.now() - data.lastBegged) / 1000))
-                },
-                lastQuaterly: {
-                    used: lastQuaterlyy,
-                    timeLeft: parseSeconds(Math.floor(12600 - (Date.now() - data.lastQuaterly) / 1000))
-                }
-        }
+                        used: lastHaflyy,
+                        timeLeft: parseSeconds(Math.floor(43200 - (Date.now() - data.lastHafly) / 1000))
+                    },
+                    lastDaily: {
+                        used: lastDailyy,
+                        timeLeft: parseSeconds(Math.floor(86400 - (Date.now() - data.lastDaily) / 1000))
+                    },
+                    lastWeekly: {
+                        used: lastWeeklyy,
+                        timeLeft: parseSeconds(Math.floor(604800 - (Date.now() - data.lastWeekly) / 1000))
+                    },
+                    lastMonthly: {
+                        used: lastMonthlyy,
+                        timeLeft: parseSeconds(Math.floor(2.592e+6 - (Date.now() - data.lastMonthly) / 1000))
+                    },
+                    lastBegged: {
+                        used: lastBeggedy,
+                        timeLeft: parseSeconds(Math.floor(240 - (Date.now() - data.lastBegged) / 1000))
+                    },
+                    lastQuaterly: {
+                        used: lastQuaterlyy,
+                        timeLeft: parseSeconds(Math.floor(12600 - (Date.now() - data.lastQuaterly) / 1000))
+                    }
+        })
     }
 }
 async function transferMoney(settings) {
@@ -722,7 +722,7 @@ async function makeUser(settings, user2 = false, uid, gid) {
         userID: user,
         guildID: gid || settings.guild.id || null,
         wallet: wallet || 0,
-            bank: bank || 0
+        bank: bank || 0
     });
     await saveUser(newUser);
     return newUser;
