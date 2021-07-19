@@ -1,4 +1,5 @@
 const fs = require('fs');
+const event = require('./classes/functions').cs;
 /**
  * @author Silent-Coder
  * @license Apache-2.0
@@ -14,7 +15,7 @@ const {
     makeUser,
     saveUser,
     connect,
-    updateInventory
+    updateInventory,
 } = require('./classes/functions');
 /**
  * @class CurrencySystem
@@ -23,20 +24,31 @@ class CurrencySystem {
     setMongoURL(password) {
         if (!password.startsWith("mongodb+srv")) throw new TypeError("Invalid MongoURL");
         connect(password);
-        fs.writeFileSync(require("path").join(__dirname, "./classes/db.json"), JSON.stringify({
+        fs.writeFile(require("path").join(__dirname, "./classes/db.json"), JSON.stringify({
             mongoURL: password
-        }));
+        }), (err) => {
+            if (err) event.emit('debug', `[ CS => Error ] : Unable to save MongoDB URL when connecting to MongoDB`);
+            else event.emit('debug', `[ CS => Debug ] : Successfully saved MongoDB URL ( Used in Shop Functions )`)
+        });
     };
 
 
 
 
     async buy(settings) {
+        event.emit('debug', `[ CS => Debug ] : Buy Function is Executed.`)
         let inventoryData = await getInventory(settings);
-        if (!inventoryData) inventoryData = await makeInventory(settings);
-
+        event.emit('debug', `[ CS => Debug ] : Fetching Inventory. ( Buy Function )`)
+        if (!inventoryData) {
+            inventoryData = await makeInventory(settings);
+            event.emit('debug', `[ CS => Debug ] : Making new Inventory ( Buy Function )`)
+        }
+        event.emit('debug', `[ CS => Debug ] : Fetching User ( Buy Function )`)
         let data = await findUser(settings)
-        if (!data) data = await makeUser(settings);
+        if (!data) {
+            data = await makeUser(settings);
+            event.emit('debug', `[ CS => Debug ] : Making new User ( Buy Function )`)
+        }
         if (!settings.guild) settings.guild = {
             id: null
         }
@@ -82,6 +94,7 @@ class CurrencySystem {
                     amount: 1
                 });
             };
+            event.emit('debug', `[ CS => Debug ] : Updating Inventory ( Buy Function )`)
             await updateInventory(_getDbURL(), data.inventory, settings, "currencies");
             return {
                 error: false,
@@ -222,4 +235,5 @@ module.exports = CurrencySystem;
 
 function _getDbURL() {
     return JSON.parse(fs.readFileSync(require("path").join(__dirname, "./classes/db.json"), "utf8")).mongoURL;
-}
+};
+module.exports.cs = event;

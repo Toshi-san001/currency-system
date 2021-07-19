@@ -1,7 +1,7 @@
 const db = require("mongoose");
 const cs = require("../models/currency");
 const inv = require('../models/inventory');
-
+const event = new(require('events').EventEmitter)();
 let wallet;
 let bank;
 
@@ -578,7 +578,7 @@ async function info(userID, guildID) {
         info: Object.entries({
             lastHourly: {
                 used: lastHourlyy,
-                    timeLeft: parseSeconds(Math.floor(3600 - (Date.now() - data.lastHourly) / 1000))
+                timeLeft: parseSeconds(Math.floor(3600 - (Date.now() - data.lastHourly) / 1000))
                 },
                 lastHafly: {
                         used: lastHaflyy,
@@ -738,6 +738,7 @@ async function saveUser(data) {
 };
 
 function updateInventory(mongoURL, newData, settings, collection = "inventory-currencies") {
+    event.emit('debug', `[ CS => Debug ] : UpdateInventory function is executed.`)
     if (!settings.guild) settings.guild = {
         id: null
     };
@@ -752,14 +753,19 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
         useNewUrlParser: true,
         useUnifiedTopology: true
     }).connect(function (err, db) {
-        if (err) throw err;
+        if (err) return event.emit('debug', `[ CS => Error ] : Unable To Connect to MongoDB ( updateInventory Function )`, err)
+
+        event.emit('debug', `[ CS => Debug ] : Connected to MongoDB ( updateInventory Function )`)
         db.db(mongoURL.split('/')[mongoURL.split('/').length - 1]).collection(collection).updateOne(query, {
             $set: {
                 inventory: newData
             }
         }, function (err, res) {
-            if (err) throw err;
+            if (err) return event.emit('debug', `[ CS => Error ] : Unable To Save Data to MongoDB ( updateInventory Function )`, err)
+            if (res.result.n > 0) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
+            else event.emit('debug', `[ CS => Error ] : MongoDB Didn't Update the DB. ( updateInventory Function )`);
             db.close();
+            event.emit('debug', `[ CS => Debug ] : Closing DB  ( updateInventory Function )`)
         });
     });
 };
@@ -826,3 +832,4 @@ module.exports = {
     sleep,
     info
 }
+module.exports.cs = event;

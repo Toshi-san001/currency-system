@@ -9,8 +9,11 @@ const {
     mongourl
 } = require("./config.json");
 const CurrencySystem = require("currency-system");
-
 const cs = new CurrencySystem;
+CurrencySystem.cs.on('debug', (debug, error) => {
+    console.log(debug);
+    if (error) console.error(error);
+});
 client.login(token);
 //sets mongo url
 cs.setMongoURL(mongourl);
