@@ -749,7 +749,7 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
         userID: settings.user.id,
         guildID: settings.guild.id || null,
     }
-    require('mongodb').MongoClient(mongoURL, {
+    new(require('mongodb').MongoClient)(mongoURL, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     }).connect(function (err, db) {
