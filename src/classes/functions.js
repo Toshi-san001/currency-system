@@ -762,8 +762,8 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
             }
         }, function (err, res) {
             if (err) return event.emit('debug', `[ CS => Error ] : Unable To Save Data to MongoDB ( updateInventory Function )`, err)
-            if (res.result.n > 0) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
-            else event.emit('debug', `[ CS => Error ] : MongoDB Didn't Update the DB. ( updateInventory Function )`);
+         //   if (res > 0) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
+          //  else event.emit('debug', `[ CS => Error ] : MongoDB Didn't Update the DB. ( updateInventory Function )`);
             db.close();
             event.emit('debug', `[ CS => Debug ] : Closing DB  ( updateInventory Function )`)
         });
