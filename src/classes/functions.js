@@ -91,7 +91,10 @@ async function withdraw(settings) {
 
     const money = settings.amount;
     const bank = data.bank;
-
+    if (money !== "all" || money !== "max" || isNan(money)) return {
+        error: true,
+        type: 'money'
+    };
     if (!money) return {
         error: true,
         type: 'money'
