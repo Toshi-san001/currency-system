@@ -499,7 +499,7 @@ async function beg(settings) {
 
     let beg = data.lastBegged; // XDDDD
     let timeout = 240;
-    if (parseInt(data.cooldown)) timeout = parseInt(data.cooldown);
+    if (parseInt(settings.cooldown)) timeout = parseInt(settings.cooldown);
     if (beg !== null && timeout - (Date.now() - beg) / 1000 > 0) return {
         error: true,
         type: 'time',
