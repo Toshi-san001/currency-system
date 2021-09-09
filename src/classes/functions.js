@@ -91,7 +91,12 @@ async function withdraw(settings) {
 
     const money = settings.amount;
     const bank = data.bank;
-
+/*
+    if (money !== "all" || money !== "max" || isNan(money)) return {
+        error: true,
+        type: 'money'
+    };
+*/
     if (!money) return {
         error: true,
         type: 'money'
@@ -494,6 +499,7 @@ async function beg(settings) {
 
     let beg = data.lastBegged; // XDDDD
     let timeout = 240;
+    if (parseInt(settings.cooldown)) timeout = parseInt(settings.cooldown);
     if (beg !== null && timeout - (Date.now() - beg) / 1000 > 0) return {
         error: true,
         type: 'time',
@@ -749,7 +755,7 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
         userID: settings.user.id,
         guildID: settings.guild.id || null,
     }
-    require('mongodb').MongoClient(mongoURL, {
+    new(require('mongodb').MongoClient)(mongoURL, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     }).connect(function (err, db) {
@@ -762,8 +768,8 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
             }
         }, function (err, res) {
             if (err) return event.emit('debug', `[ CS => Error ] : Unable To Save Data to MongoDB ( updateInventory Function )`, err)
-            if (res.result.n > 0) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
-            else event.emit('debug', `[ CS => Error ] : MongoDB Didn't Update the DB. ( updateInventory Function )`);
+         //   if (res > 0) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
+          //  else event.emit('debug', `[ CS => Error ] : MongoDB Didn't Update the DB. ( updateInventory Function )`);
             db.close();
             event.emit('debug', `[ CS => Debug ] : Closing DB  ( updateInventory Function )`)
         });
