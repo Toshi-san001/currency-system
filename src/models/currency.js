@@ -4,15 +4,15 @@ const {
   } = require("mongoose");
   
     module.exports = model('currency', new Schema({
-      userID: { type: String },
-      guildID: { type: String },
+      userID: String,
+      guildID: String,
       wallet: { type: Number, default: 0 },
       bank: { type: Number, default: 0 },
       networth: {
         type: Number,
         default: 0
       },
-      inventory: { type: Array },
+      inventory: Array,
       lastUpdated: { type: Date, default: new Date() },
       lastGamble: { type: Number, default: 0 },
       lastHourly: { type: Number, default: 0 },
