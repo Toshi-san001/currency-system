@@ -4,15 +4,25 @@ const inv = require('../models/inventory');
 const event = new(require('events').EventEmitter)();
 let wallet;
 let bank;
-
+let maxBank;
+let maxWallet;
+// ===================================================================
 function setDefaultWalletAmount(amount) {
     if (parseInt(amount)) wallet = amount || 0;
 }
-
+// ===================================================================
 function setDefaultBankAmount(amount) {
     if (parseInt(amount)) bank = amount || 0;
 }
-
+// ===================================================================
+function setMaxBankAmount(amount) {
+    if (parseInt(amount)) maxBank = amount || 0;
+}
+// ===================================================================
+function setMaxWalletAmount(amount) {
+    if (parseInt(amount)) maxWallet = amount || 0;
+}
+// ===================================================================
 function connect(that) {
     let connected = true;
     db.connect(that, {
@@ -24,7 +34,23 @@ function connect(that) {
     }).then(() => {
         if (connected === true) console.info("Connected to DB successfully.")
     });
-}
+};
+// ===================================================================
+function amount(data, type = 'add', where = 'wallet', amount) {
+    if (where === 'bank') {
+        if (type === 'add') data.bank += amount;
+        else data.bank -= amount;
+    } else {
+        if (type === 'add') data.wallet += amount;
+        else data.wallet -= amount;
+    };
+    if (maxWallet > 0 && data.wallet > maxWallet) data.wallet = maxWallet;
+    if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
+    if (!data.networth) data.networth = 0;
+    data.networth = data.bank + data.wallet;
+    return data;
+};
+// ===================================================================
 async function gamble(settings) {
 
     let data = await findUser(settings)
@@ -61,9 +87,7 @@ async function gamble(settings) {
 
     if (result <= 5) {
         data.lastGamble = Date.now();
-        data.wallet = data.wallet - parseInt(money);
-        if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data = amount(data, 'remove', 'wallet', parseInt(money))
         await saveUser(data);
         return {
             error: false,
@@ -72,10 +96,10 @@ async function gamble(settings) {
             wallet: data.wallet
         };
     } else if (result > 5) {
-        data.lastGamble = Date.now();
-        data.wallet = (data.wallet + parseInt(money));
-        if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data = Date.now();
+
+        data = amount(data, 'add', 'wallet', parseInt(money));
+
         await saveUser(data);
         return {
             error: false,
@@ -85,18 +109,19 @@ async function gamble(settings) {
         };
     };
 };
+// ===================================================================
 async function withdraw(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
 
     const money = settings.amount;
     const bank = data.bank;
-/*
-    if (money !== "all" || money !== "max" || isNan(money)) return {
-        error: true,
-        type: 'money'
-    };
-*/
+    /*
+        if (money !== "all" || money !== "max" || isNan(money)) return {
+            error: true,
+            type: 'money'
+        };
+    */
     if (!money) return {
         error: true,
         type: 'money'
@@ -114,11 +139,24 @@ async function withdraw(settings) {
         if (bank === 0) return {
             error: true,
             type: 'no-money'
-        }
-        data.wallet = data.wallet + data.bank;
+        };
+        data.wallet += data.bank;
         data.bank = 0;
+        if (maxWallet > 0 && data.wallet > maxWallet) {
+            const a = data.wallet - maxWallet;
+            if (a > 0) data.bank += a;
+            data.wallet = maxWallet
+        };
+        if (maxBank > 0 && data.bank > maxBank) {
+            const a = data.bank - maxBank;
+            if (a > 0) {
+                if (data.wallet !== maxWallet) data.wallet += a;
+            }
+            data.bank = maxBank
+        };
+
         if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data.networth = data.bank + data.wallet;
         await saveUser(data);
         return {
             error: false,
@@ -126,11 +164,23 @@ async function withdraw(settings) {
         }
 
     } else {
+        data.wallet += data.bank;
+        data.bank = 0;
+        if (maxWallet > 0 && data.wallet > maxWallet) {
+            const a = data.wallet - maxWallet;
+            if (a > 0) data.bank += a;
+            data.wallet = maxWallet
+        };
+        if (maxBank > 0 && data.bank > maxBank) {
+            const a = data.bank - maxBank;
+            if (a > 0) {
+                if (data.wallet !== maxWallet) data.wallet += a;
+            }
+            data.bank = maxBank
+        };
 
-        data.wallet = data.wallet + parseInt(money);
-        data.bank = data.bank - parseInt(money);
         if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data.networth = data.bank + data.wallet;
         await saveUser(data);
         return {
             error: false,
@@ -139,6 +189,7 @@ async function withdraw(settings) {
         };
     }
 };
+// ===================================================================
 async function deposite(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -150,7 +201,7 @@ async function deposite(settings) {
         error: true,
         type: 'money'
     };
-    if (money.includes('-')) return {
+    if (String(money).includes('-')) return {
         error: true,
         type: 'negative-money'
     };
@@ -159,40 +210,56 @@ async function deposite(settings) {
         type: 'low-money'
     };
 
-
-    if (money === 'all' || money === 'max') {
+    if (money.match(/all/gi) || money.match(/max/gi)) {
 
         if (wallet === 0) return {
             error: true,
             type: 'no-money'
-        }
-
-        data.bank = data.wallet + data.bank;
+        };
+        data.bank += data.wallet;
         data.wallet = 0;
+        if (maxWallet > 0 && data.wallet > maxWallet) {
+            const a = data.wallet - maxWallet;
+            if (a > 0) data.bank += a;
+            data.wallet = maxWallet
+        };
+        if (maxBank > 0 && data.bank > maxBank) {
+            const a = data.bank - maxBank;
+            if (a > 0) {
+                if (data.wallet !== maxWallet) data.wallet += a;
+            }
+            data.bank = maxBank
+        };
+
         if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data.networth = data.bank + data.wallet;
+
         await saveUser(data);
         return {
             error: false,
             type: 'all-success'
-        }
+        };
 
 
     } else {
-
-        data.wallet = data.wallet - parseInt(money);
-        data.bank = data.bank + parseInt(money);
+        data.bank += data.amount;
+        if ((data.wallet - data.amount) < 0) {
+            const a = data.wallet;
+            data.wallet = 0;
+            data.bank -= Number(String(a  - data.amount).replace("-",''));
+        } else data.bank -= data.amount;
+        data.wallet -= data.amount;
         if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data.networth = data.bank + data.wallet;
         await saveUser(data);
         return {
             error: false,
-            type: 'success',
-            amount: parseInt(money)
+            type: 'success'
         };
 
     }
 };
+// ===================================================================
 async function balance(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -204,6 +271,7 @@ async function balance(settings) {
         networth: data.networth
     }
 };
+// ===================================================================
 async function leaderboard(guildid) {
     let data = await cs.find({
         guildID: guildid || null
@@ -213,6 +281,7 @@ async function leaderboard(guildid) {
     })
     return data;
 };
+// ===================================================================
 async function globalLeaderboard() {
 
     let array = await cs.find();
@@ -234,6 +303,7 @@ async function globalLeaderboard() {
     })
     return output;
 };
+// ===================================================================
 async function work(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -249,9 +319,7 @@ async function work(settings) {
 
         let amountt = Math.floor(Math.random() * settings.maxAmount || 100) + 1;
         data.lastWork = Date.now();
-        data.wallet = data.wallet + amountt;
-        if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data = amount(data, 'add', 'wallet', amountt);
         await saveUser(data);
         let result = Math.floor((Math.random() * settings.replies.length));
         return {
@@ -263,6 +331,7 @@ async function work(settings) {
 
     };
 };
+// ===================================================================
 async function monthly(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -276,9 +345,8 @@ async function monthly(settings) {
     };
     else {
         data.lastMonthly = Date.now();
-        data.wallet = data.wallet + settings.amount;
-        if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data = amount(data, 'add', 'wallet', settings.amount);
+
         await saveUser(data);
 
         return {
@@ -289,6 +357,7 @@ async function monthly(settings) {
 
     };
 };
+// ===================================================================
 async function weekly(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -302,9 +371,7 @@ async function weekly(settings) {
     };
     else {
         data.lastWeekly = Date.now();
-        data.wallet = data.wallet + settings.amount;
-        if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data = amount(data, 'add', 'wallet', settings.amount);
         await saveUser(data);
 
         return {
@@ -315,6 +382,7 @@ async function weekly(settings) {
 
     };
 };
+// ===================================================================
 async function quaterly(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -328,9 +396,7 @@ async function quaterly(settings) {
     };
     else {
         data.lastQuaterly = Date.now();
-        data.wallet = data.wallet + settings.amount;
-        if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data = amount(data, 'add', 'wallet', settings.amount);
         await saveUser(data);
 
         return {
@@ -341,6 +407,7 @@ async function quaterly(settings) {
 
     };
 };
+// ===================================================================
 async function hafly(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -354,9 +421,7 @@ async function hafly(settings) {
     };
     else {
         data.lastHafly = Date.now();
-        data.wallet = data.wallet + settings.amount;
-        if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data = amount(data, 'add', 'wallet', settings.amount);
         await saveUser(data);
 
         return {
@@ -366,6 +431,7 @@ async function hafly(settings) {
         };
     };
 };
+// ===================================================================
 async function daily(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -379,9 +445,7 @@ async function daily(settings) {
     };
     else {
         data.lastDaily = Date.now();
-        data.wallet = data.wallet + settings.amount;
-        if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data = amount(data, 'add', 'wallet', settings.amount);
         await saveUser(data);
 
         return {
@@ -392,6 +456,7 @@ async function daily(settings) {
 
     };
 };
+// ===================================================================
 async function hourly(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -405,9 +470,7 @@ async function hourly(settings) {
     };
     else {
         data.lastHourly = Date.now();
-        data.wallet = data.wallet + settings.amount;
-        if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data = amount(data, 'add', 'wallet', settings.amount);
         await saveUser(data);
 
         return {
@@ -418,6 +481,7 @@ async function hourly(settings) {
 
     };
 };
+// ===================================================================
 async function rob(settings) {
     if (!settings.guild) settings.guild = {
         id: null
@@ -459,11 +523,10 @@ async function rob(settings) {
     // 5 here is percentage of success.
     if (testChance(settings.successPercentage || 5)) {
         // Success!
+        user2 = amount(user2, 'remove', 'wallet', random);
+        user1 = amount(user1, 'add', 'wallet', random);
 
-        user2.wallet = user2.wallet - random;
-        user1.wallet = user1.wallet + random;
-        await saveUser(user1);
-        await saveUser(user2);
+        await saveUser(user1, user2);
         return {
             error: false,
             type: 'success',
@@ -475,14 +538,9 @@ async function rob(settings) {
     } else {
         // Fail :(
         if (random > user1.wallet) random = user1.wallet;
-        user2.wallet = user2.wallet + random;
-        user1.wallet = user1.wallet - random;
-        if (!user1.networth) user1.networth = 0;
-        user1.networth = user1.wallet + user1.bank;
-        if (!user2.networth) user2.networth = 0;
-        user2.networth = user2.wallet + user2.bank;
-        await saveUser(user1);
-        await saveUser(user2);
+        user2 = amount(user2, 'add', 'wallet', random);
+        user1 = amount(user1, 'remove', 'wallet', random);
+        await saveUser(user1, user2);
         return {
             error: true,
             type: 'caught',
@@ -493,6 +551,7 @@ async function rob(settings) {
     };
 
 };
+// ===================================================================
 async function beg(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -506,11 +565,9 @@ async function beg(settings) {
         time: parseSeconds(Math.floor(timeout - (Date.now() - beg) / 1000))
     };
     else {
-        let amountt = Math.floor(Math.random() * (settings.maxAmount || 400)) + (settings.minAmount || 200)
+        const amountt = Math.round((settings.minAmount || 200) + Math.random() * (settings.maxAmount || 400));
         data.lastBegged = Date.now();
-        data.wallet = data.wallet + amountt;
-        if (!data.networth) data.networth = 0;
-        data.networth = data.wallet + data.bank;
+        data = amount(data, 'add', 'wallet', amountt);
         await saveUser(data);
 
         return {
@@ -521,6 +578,7 @@ async function beg(settings) {
 
     };
 };
+// ===================================================================
 async function addMoney(settings) {
     let data = await findUser(settings);
     if (!data) data = await makeUser(settings);
@@ -528,17 +586,18 @@ async function addMoney(settings) {
         error: true,
         type: 'negative-money'
     };
-    let amount = parseInt(settings.amount) || 0;
-    if (settings.wheretoPutMoney === "bank") data.bank += amount
-    else data.wallet += amount
-    if (!data.networth) data.networth = 0;
-    data.networth = data.wallet + data.bank;
+    let amountt = parseInt(settings.amount) || 0;
+    if (settings.wheretoPutMoney === "bank") data = amount(data, 'add', 'bank', amountt);
+    else data = amount(data, 'add', 'wallet', amountt);
+
+
     await saveUser(data);
     return {
         error: false,
         type: 'success'
     };
 };
+// ===================================================================
 async function removeMoney(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -548,19 +607,19 @@ async function removeMoney(settings) {
     };
     if (settings.wheretoPutMoney === "bank") {
         if (settings.amount === 'all' || settings.amount === "max") data.bank = 0;
-        else data.bank -= parseInt(settings.amount) || 0;
+        else data = amount(data, 'remove', 'bank', parseInt(settings.amount) || 0);
     } else {
         if (settings.amount === 'all' || settings.amount === "max") data.wallet = 0;
-        else data.wallet -= parseInt(settings.amount) || 0;
+        else data = amount(data, 'remove', 'wallet', parseInt(settings.amount) || 0);
     }
-    if (!data.networth) data.networth = 0;
-    data.networth = data.wallet + data.bank;
+
     await saveUser(data);
     return {
         error: false,
         type: 'success'
     };
 };
+// ===================================================================
 async function info(userID, guildID) {
     let data = await findUser({}, userID, guildID)
     if (!data) data = await makeUser({}, userID, guildID);
@@ -585,34 +644,35 @@ async function info(userID, guildID) {
             lastHourly: {
                 used: lastHourlyy,
                 timeLeft: parseSeconds(Math.floor(3600 - (Date.now() - data.lastHourly) / 1000))
-                },
-                lastHafly: {
-                        used: lastHaflyy,
-                        timeLeft: parseSeconds(Math.floor(43200 - (Date.now() - data.lastHafly) / 1000))
-                    },
-                    lastDaily: {
-                        used: lastDailyy,
-                        timeLeft: parseSeconds(Math.floor(86400 - (Date.now() - data.lastDaily) / 1000))
-                    },
-                    lastWeekly: {
-                        used: lastWeeklyy,
-                        timeLeft: parseSeconds(Math.floor(604800 - (Date.now() - data.lastWeekly) / 1000))
-                    },
-                    lastMonthly: {
-                        used: lastMonthlyy,
-                        timeLeft: parseSeconds(Math.floor(2.592e+6 - (Date.now() - data.lastMonthly) / 1000))
-                    },
-                    lastBegged: {
-                        used: lastBeggedy,
-                        timeLeft: parseSeconds(Math.floor(240 - (Date.now() - data.lastBegged) / 1000))
-                    },
-                    lastQuaterly: {
-                        used: lastQuaterlyy,
-                        timeLeft: parseSeconds(Math.floor(12600 - (Date.now() - data.lastQuaterly) / 1000))
-                    }
+            },
+            lastHafly: {
+                used: lastHaflyy,
+                timeLeft: parseSeconds(Math.floor(43200 - (Date.now() - data.lastHafly) / 1000))
+            },
+            lastDaily: {
+                used: lastDailyy,
+                timeLeft: parseSeconds(Math.floor(86400 - (Date.now() - data.lastDaily) / 1000))
+            },
+            lastWeekly: {
+                used: lastWeeklyy,
+                timeLeft: parseSeconds(Math.floor(604800 - (Date.now() - data.lastWeekly) / 1000))
+            },
+            lastMonthly: {
+                used: lastMonthlyy,
+                timeLeft: parseSeconds(Math.floor(2.592e+6 - (Date.now() - data.lastMonthly) / 1000))
+            },
+            lastBegged: {
+                used: lastBeggedy,
+                timeLeft: parseSeconds(Math.floor(240 - (Date.now() - data.lastBegged) / 1000))
+            },
+            lastQuaterly: {
+                used: lastQuaterlyy,
+                timeLeft: parseSeconds(Math.floor(12600 - (Date.now() - data.lastQuaterly) / 1000))
+            }
         })
     }
 }
+// ===================================================================
 async function transferMoney(settings) {
     if (!settings.guild) settings.guild = {
         id: null
@@ -630,15 +690,9 @@ async function transferMoney(settings) {
         error: true,
         type: 'low-money'
     };
-
-    user1.wallet = user1.wallet - money;
-    user2.wallet = user2.wallet + money;
-    if (!user1.networth) user1.networth = 0;
-    user1.networth = user1.wallet + user1.bank;
-    if (!user2.networth) user2.networth = 0;
-    user2.networth = user2.wallet + user2.bank;
-    saveUser(user1);
-    saveUser(user2);
+    user1 = amount(user1, 'remove', 'bank', money);
+    user2 = amount(user2, 'add', 'bank', money);
+    await saveUser(user1, user2);
     return {
         error: false,
         type: 'success',
@@ -646,6 +700,7 @@ async function transferMoney(settings) {
         user2: settings.user2
     };
 };
+// ===================================================================
 async function getUserItems(settings) {
     let data = await findUser(settings)
     if (!data) data = await makeUser(settings);
@@ -654,6 +709,7 @@ async function getUserItems(settings) {
         inventory: data.inventory
     };
 };
+// ===================================================================
 async function getShopItems(settings) {
     let data = await getInventory(settings)
     if (!data) data = await makeInventory(settings);
@@ -663,6 +719,7 @@ async function getShopItems(settings) {
     };
 };
 
+// ===================================================================
 function parseSeconds(seconds) {
     if (String(seconds).includes('-')) return '0 Seconds'
     let days = parseInt(seconds / 86400);
@@ -682,12 +739,14 @@ function parseSeconds(seconds) {
 
     return `${seconds} second(s)`
 };
+// ===================================================================
 // This is for Rob Command
 function testChance(successPercentage) {
     let random2 = Math.random() * 10;
     return ((random2 -= successPercentage) < 0);
 };
 // Basic Functions
+// ===================================================================
 async function findUser(settings, uid, gid) {
     if (!settings.guild) settings.guild = {
         id: null
@@ -698,6 +757,7 @@ async function findUser(settings, uid, gid) {
     });
     return find;
 };
+// ===================================================================
 async function getInventory(settings) {
     if (!settings.guild) settings.guild = {
         id: null
@@ -707,6 +767,7 @@ async function getInventory(settings) {
     });
     return find;
 };
+// ===================================================================
 async function makeInventory(settings) {
     if (!settings.guild) settings.guild = {
         id: null
@@ -718,6 +779,7 @@ async function makeInventory(settings) {
     await saveUser(inventory);
     return inventory;
 };
+// ===================================================================
 async function makeUser(settings, user2 = false, uid, gid) {
     if (!settings.guild) settings.guild = {
         id: null
@@ -734,15 +796,23 @@ async function makeUser(settings, user2 = false, uid, gid) {
     return newUser;
 
 };
-async function saveUser(data) {
+// ===================================================================
+async function saveUser(data, data2) {
     // this will prevent error
     // ParallelSaveError: Can't save() the same doc multiple times in parallel.
     await sleep(Math.floor((Math.random() * 10) + 1) * 100) // 100 - 1000 random  Number generator
     await data.save(function (err) {
         if (err) throw err;
     });
+    if (data2) {
+        await sleep(Math.floor((Math.random() * 10) + 1) * 100) // 100 - 1000 random  Number generator
+        await data2.save(function (err) {
+            if (err) throw err;
+        });
+    }
 };
 
+// ===================================================================
 function updateInventory(mongoURL, newData, settings, collection = "inventory-currencies") {
     event.emit('debug', `[ CS => Debug ] : UpdateInventory function is executed.`)
     if (!settings.guild) settings.guild = {
@@ -761,27 +831,31 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
     }).connect(function (err, db) {
         if (err) return event.emit('debug', `[ CS => Error ] : Unable To Connect to MongoDB ( updateInventory Function )`, err)
 
-        event.emit('debug', `[ CS => Debug ] : Connected to MongoDB ( updateInventory Function )`)
+        event.emit('debug', `[ CS => Debug ] : Connected to MongoDB ( updateInventory Function )`);
         db.db(mongoURL.split('/')[mongoURL.split('/').length - 1]).collection(collection).updateOne(query, {
             $set: {
                 inventory: newData
             }
         }, function (err, res) {
+            console.log(res || 'No RES')
+            console.log(err || 'No ERR')
             if (err) return event.emit('debug', `[ CS => Error ] : Unable To Save Data to MongoDB ( updateInventory Function )`, err)
-         //   if (res > 0) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
-          //  else event.emit('debug', `[ CS => Error ] : MongoDB Didn't Update the DB. ( updateInventory Function )`);
+              if (res.nModified) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
+             else event.emit('debug', `[ CS => Error ] : MongoDB Didn't Update the DB. ( updateInventory Function )`);
             db.close();
             event.emit('debug', `[ CS => Debug ] : Closing DB  ( updateInventory Function )`)
         });
     });
 };
 
+// ===================================================================
 function sleep(milliseconds) {
     return new Promise((resolve) => {
         setTimeout(resolve, milliseconds);
     });
 };
 
+// ===================================================================
 // colors : https://github.com/shiena/ansicolor/blob/master/README.md
 async function _checkUpdate() {
     if (!require('node-fetch')) return;
@@ -805,6 +879,7 @@ async function _checkUpdate() {
 
 }
 _checkUpdate()
+// ===================================================================
 module.exports = {
     setDefaultWalletAmount,
     setDefaultBankAmount,
@@ -836,6 +911,8 @@ module.exports = {
     makeInventory,
     updateInventory,
     sleep,
-    info
+    info,
+    setMaxBankAmount,
+    setMaxWalletAmount
 }
 module.exports.cs = event;

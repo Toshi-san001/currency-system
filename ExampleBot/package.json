@@ -12,6 +12,7 @@
     "@silent-coder/discord-cmd-handler": "^2.2.0",
     "currency-system": "file:..",
     "discord.js": "^12.5.1",
-    "mongoose": "^5.0.0"
+    "mongoose": "^6.0.12",
+    "mpath": "^0.8.4"
   }
 }

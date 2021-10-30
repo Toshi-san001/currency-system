@@ -18,12 +18,14 @@ client.login(token);
 //sets mongo url
 cs.setMongoURL(mongourl);
 //sets default wallet amount when ever new user is created.
-cs.setDefaultWalletAmount(100)
+cs.setDefaultWalletAmount(100);
 //sets default bank amount when ever new user is created.
-cs.setDefaultBankAmount(1000)
-
+cs.setDefaultBankAmount(1000);
+cs.setMaxBankAmount(10000);
+cs.setMaxWalletAmount(10000);
 
 client.on("ready", () => {
+
     //I'm using logger and not console beacuse it has colours :) 
     logger.info(`Logged in as ${client.user.tag} Successfully..!!`)
     cmdHandler(client, {

@@ -24,12 +24,8 @@ class CurrencySystem {
     setMongoURL(password) {
         if (!password.startsWith("mongodb+srv")) throw new TypeError("Invalid MongoURL");
         connect(password);
-        fs.writeFile(require("path").join(__dirname, "./classes/db.json"), JSON.stringify({
-            mongoURL: password
-        }), (err) => {
-            if (err) event.emit('debug', `[ CS => Error ] : Unable to save MongoDB URL when connecting to MongoDB`);
-            else event.emit('debug', `[ CS => Debug ] : Successfully saved MongoDB URL ( Used in Shop Functions )`)
-        });
+        process.mongoURL = password;
+        event.emit('debug', `[ CS => Debug ] : Successfully saved MongoDB URL ( Used in Shop Functions )`)
     };
 
 
@@ -234,6 +230,8 @@ Object.assign(CurrencySystem.prototype, require('./classes/functions'))
 module.exports = CurrencySystem;
 
 function _getDbURL() {
-    return JSON.parse(fs.readFileSync(require("path").join(__dirname, "./classes/db.json"), "utf8")).mongoURL;
+    let url = process.mongoURL;
+    if (require("mongoose").connections.length) url = (require("mongoose").connections[0]._connectionString)
+    return url;
 };
 module.exports.cs = event;
