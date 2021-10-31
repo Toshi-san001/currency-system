@@ -20,5 +20,6 @@ const {
       lastWeekly: { type: Number, default: 0 },
       lastMonthly: { type: Number, default: 0 },
       lastBegged: { type: Number, default: 0 },
-      lastWork: { type: Number, default: 0 }
+      lastWork: { type: Number, default: 0 },
+      bankSpace: { type: Number, default: 0 }
     }));

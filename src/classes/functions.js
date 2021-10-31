@@ -37,24 +37,56 @@ function connect(that) {
 };
 // ===================================================================
 function amount(data, type = 'add', where = 'wallet', amount) {
+    if (!data.bankSpace) data.bankSpace = maxBank || 0;
+
     if (where === 'bank') {
         if (type === 'add') data.bank += amount;
         else data.bank -= amount;
     } else {
+        // data.bank += amount;
+        // if ((data.wallet - amount) < 0) {
+        //     const a = data.wallet;
+        //     data.wallet = 0;
+        //     data.bank -= Number(String(a - amount).replace("-", ''));
+        // } else data.bank -= amount;
+        // data.wallet -= amount;
         if (type === 'add') data.wallet += amount;
         else data.wallet -= amount;
     };
+    if (data.bankSpace > 0 && data.bank > data.bankSpace) {
+        console.log('so bank is more.')
+        const a = data.bank;
+        data.bank = data.bankSpace;
+        data.wallet += Number(String(a - data.bankSpace).replace("-", ''));
+        console.log(data)
+    } else {
+        if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
+    }
     if (maxWallet > 0 && data.wallet > maxWallet) data.wallet = maxWallet;
-    if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
     if (!data.networth) data.networth = 0;
     data.networth = data.bank + data.wallet;
     return data;
 };
 // ===================================================================
+async function setBankSpace(userID, guildID, newAmount) {
+    let data = await findUser({}, userID, guildID)
+    newAmount = parseInt(newAmount);
+    if (!newAmount) return {
+        error: true,
+        type: 'no-amount-provided'
+    }
+    data.bankSpace = newAmount;
+    await saveUser(data);
+    return {
+        error: false,
+        type: 'success',
+        amount: newAmount
+    };
+}
+// ===================================================================
 async function gamble(settings) {
 
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     const money = settings.amount;
     const result = Math.floor(Math.random() * 10);
@@ -96,7 +128,7 @@ async function gamble(settings) {
             wallet: data.wallet
         };
     } else if (result > 5) {
-        data = Date.now();
+        data.lastGamble = Date.now();
 
         data = amount(data, 'add', 'wallet', parseInt(money));
 
@@ -112,7 +144,6 @@ async function gamble(settings) {
 // ===================================================================
 async function withdraw(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     const money = settings.amount;
     const bank = data.bank;
@@ -181,6 +212,7 @@ async function withdraw(settings) {
 
         data.wallet += parseInt(settings.amount)
         data.bank -= parseInt(settings.amount)
+
         await saveUser(data);
         return {
             error: false,
@@ -216,7 +248,6 @@ async function withdraw(settings) {
 // ===================================================================
 async function deposite(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     const money = settings.amount;
     const wallet = data.wallet;
@@ -254,7 +285,13 @@ async function deposite(settings) {
 
         if (!data.networth) data.networth = 0;
         data.networth = data.bank + data.wallet;
-
+        if (data.bankSpace > 0 && data.bank > data.bankSpace) {
+            const a = data.bank;
+            data.bank = data.bankSpace;
+            data.wallet += Number(String(a - data.bankSpace).replace("-", ''));
+        } else {
+            if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
+        }
         await saveUser(data);
         return {
             error: false,
@@ -267,7 +304,7 @@ async function deposite(settings) {
             error: true,
             type: 'low-money'
         };
-        
+
         data.bank += settings.amount;
 
         if ((data.wallet - settings.amount) < 0) {
@@ -277,9 +314,17 @@ async function deposite(settings) {
         } else data.bank -= settings.amount;
 
         data.wallet -= settings.amount;
-        
+
         if (!data.networth) data.networth = 0;
         data.networth = data.bank + data.wallet;
+
+        if (data.bankSpace > 0 && data.bank > data.bankSpace) {
+            const a = data.bank;
+            data.bank = data.bankSpace;
+            data.wallet += Number(String(a - data.bankSpace).replace("-", ''));
+        } else {
+            if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
+        }
         await saveUser(data);
         return {
             error: false,
@@ -292,10 +337,10 @@ async function deposite(settings) {
 // ===================================================================
 async function balance(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
     if (!data.networth) data.networth = 0;
     data.networth = data.wallet + data.bank;
     return {
+        rawData: data,
         bank: data.bank,
         wallet: data.wallet,
         networth: data.networth
@@ -336,7 +381,6 @@ async function globalLeaderboard() {
 // ===================================================================
 async function work(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     let lastWork = data.lastWork;
     let timeout = settings.cooldown;
@@ -364,7 +408,6 @@ async function work(settings) {
 // ===================================================================
 async function monthly(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     let monthly = data.lastMonthly;
     let timeout = 2.592e+6;
@@ -390,7 +433,6 @@ async function monthly(settings) {
 // ===================================================================
 async function weekly(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     let weekly = data.lastWeekly;
     let timeout = 604800;
@@ -415,7 +457,6 @@ async function weekly(settings) {
 // ===================================================================
 async function quaterly(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     let quaterly = data.lastQuaterly;
     let timeout = 21600;
@@ -440,7 +481,6 @@ async function quaterly(settings) {
 // ===================================================================
 async function hafly(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     let hafly = data.lastHafly;
     let timeout = 43200;
@@ -464,7 +504,6 @@ async function hafly(settings) {
 // ===================================================================
 async function daily(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     let daily = data.lastDaily;
     let timeout = 86400;
@@ -489,7 +528,6 @@ async function daily(settings) {
 // ===================================================================
 async function hourly(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     let lastHourly = data.lastHourly;
     let timeout = 3600;
@@ -517,7 +555,6 @@ async function rob(settings) {
         id: null
     }
     let user1 = await findUser(settings)
-    if (!user1) user1 = await makeUser(settings);
 
     let user2 = await cs.findOne({
         userID: settings.user2.id,
@@ -584,7 +621,6 @@ async function rob(settings) {
 // ===================================================================
 async function beg(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
 
     let beg = data.lastBegged; // XDDDD
     let timeout = 240;
@@ -611,7 +647,6 @@ async function beg(settings) {
 // ===================================================================
 async function addMoney(settings) {
     let data = await findUser(settings);
-    if (!data) data = await makeUser(settings);
     if (String(settings.amount).includes("-")) return {
         error: true,
         type: 'negative-money'
@@ -630,7 +665,6 @@ async function addMoney(settings) {
 // ===================================================================
 async function removeMoney(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
     if (String(settings.amount).includes("-")) return {
         error: true,
         type: 'negative-money'
@@ -652,7 +686,6 @@ async function removeMoney(settings) {
 // ===================================================================
 async function info(userID, guildID) {
     let data = await findUser({}, userID, guildID)
-    if (!data) data = await makeUser({}, userID, guildID);
 
     let lastHourlyy = true;
     let lastHaflyy = true;
@@ -670,32 +703,33 @@ async function info(userID, guildID) {
     if (data.lastMonthly !== null && 2.592e+6 - (Date.now() - data.lastMonthly) / 1000 > 0) lastMonthlyy = false;
     return {
         error: false,
+        rawData: data,
         info: Object.entries({
-            lastHourly: {
+            Hourly: {
                 used: lastHourlyy,
                 timeLeft: parseSeconds(Math.floor(3600 - (Date.now() - data.lastHourly) / 1000))
             },
-            lastHafly: {
+            Hafly: {
                 used: lastHaflyy,
                 timeLeft: parseSeconds(Math.floor(43200 - (Date.now() - data.lastHafly) / 1000))
             },
-            lastDaily: {
+            Daily: {
                 used: lastDailyy,
                 timeLeft: parseSeconds(Math.floor(86400 - (Date.now() - data.lastDaily) / 1000))
             },
-            lastWeekly: {
+            Weekly: {
                 used: lastWeeklyy,
                 timeLeft: parseSeconds(Math.floor(604800 - (Date.now() - data.lastWeekly) / 1000))
             },
-            lastMonthly: {
+            Monthly: {
                 used: lastMonthlyy,
                 timeLeft: parseSeconds(Math.floor(2.592e+6 - (Date.now() - data.lastMonthly) / 1000))
             },
-            lastBegged: {
+            Begged: {
                 used: lastBeggedy,
                 timeLeft: parseSeconds(Math.floor(240 - (Date.now() - data.lastBegged) / 1000))
             },
-            lastQuaterly: {
+            Quaterly: {
                 used: lastQuaterlyy,
                 timeLeft: parseSeconds(Math.floor(12600 - (Date.now() - data.lastQuaterly) / 1000))
             }
@@ -708,7 +742,6 @@ async function transferMoney(settings) {
         id: null
     }
     let user1 = await findUser(settings)
-    if (!user1) user1 = await makeUser(settings);
 
     let user2 = await cs.findOne({
         userID: settings.user2.id,
@@ -733,7 +766,6 @@ async function transferMoney(settings) {
 // ===================================================================
 async function getUserItems(settings) {
     let data = await findUser(settings)
-    if (!data) data = await makeUser(settings);
     return {
         error: false,
         inventory: data.inventory
@@ -785,6 +817,7 @@ async function findUser(settings, uid, gid) {
         userID: uid || settings.user.id,
         guildID: gid || settings.guild.id || null
     });
+    if (!find) find = await makeUser(settings, false, uid, gid)
     return find;
 };
 // ===================================================================
@@ -822,6 +855,7 @@ async function makeUser(settings, user2 = false, uid, gid) {
         wallet: wallet || 0,
         bank: bank || 0
     });
+    if (!newUser) throw new Error('Missing data to fetch from DB. (A function in Currency System is used and userID/guildID wasn\'t provided.)')
     await saveUser(newUser);
     return newUser;
 
@@ -943,6 +977,7 @@ module.exports = {
     sleep,
     info,
     setMaxBankAmount,
-    setMaxWalletAmount
+    setMaxWalletAmount,
+    setBankSpace
 }
 module.exports.cs = event;

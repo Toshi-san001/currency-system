@@ -67,8 +67,10 @@ Click them to view more info about the methods.
 [`work`](https://bintelligent.github.io/currency-system/examples/work)
 20. Rob's a user and have 50-50 chance of getting his money.
 [`rob`](https://bintelligent.github.io/currency-system/examples/rob)
-21. User can use it every x time. Which Bot Developor can set
+21. User can use it every x time. Which Bot Developer can set
 [`beg`](https://bintelligent.github.io/currency-system/examples/beg)
+21. Set Max bank Space
+[`bankspace`](https://bintelligent.github.io/currency-system/examples/bankspace)
 
 # New!! 
 ## Inventory System
