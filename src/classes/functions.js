@@ -130,16 +130,17 @@ async function withdraw(settings) {
         error: true,
         type: 'negative-money'
     };
-    if (bank < parseInt(money)) return {
-        error: true,
-        type: 'low-money'
-    };
+
 
     if (money === 'all' || money === 'max') {
         if (bank === 0) return {
             error: true,
             type: 'no-money'
         };
+        if (settings.amount > data.bank) return {
+            error: true,
+            type: 'low-money'
+        }
         data.wallet += data.bank;
         data.bank = 0;
         if (maxWallet > 0 && data.wallet > maxWallet) {
@@ -164,6 +165,29 @@ async function withdraw(settings) {
         }
 
     } else {
+        if (bank < parseInt(money)) return {
+            error: true,
+            type: 'low-money'
+        };
+        if (isNaN(settings.amount)) return {
+            error: true,
+            type: 'money'
+        }
+
+        if (parseInt(settings.amount) > data.bank) return {
+            error: true,
+            type: 'low-money'
+        }
+
+        data.wallet += parseInt(settings.amount)
+        data.bank -= parseInt(settings.amount)
+        await saveUser(data);
+        return {
+            error: false,
+            type: 'success',
+            amount: settings.amount
+        }
+
         data.wallet += data.bank;
         data.bank = 0;
         if (maxWallet > 0 && data.wallet > maxWallet) {
@@ -205,10 +229,7 @@ async function deposite(settings) {
         error: true,
         type: 'negative-money'
     };
-    if (parseInt(money) > wallet) return {
-        error: true,
-        type: 'low-money'
-    };
+
 
     if (money.match(/all/gi) || money.match(/max/gi)) {
 
@@ -242,19 +263,28 @@ async function deposite(settings) {
 
 
     } else {
-        data.bank += data.amount;
-        if ((data.wallet - data.amount) < 0) {
+        if (parseInt(money) > wallet) return {
+            error: true,
+            type: 'low-money'
+        };
+        
+        data.bank += settings.amount;
+
+        if ((data.wallet - settings.amount) < 0) {
             const a = data.wallet;
             data.wallet = 0;
-            data.bank -= Number(String(a  - data.amount).replace("-",''));
-        } else data.bank -= data.amount;
-        data.wallet -= data.amount;
+            data.bank -= Number(String(a - settings.amount).replace("-", ''));
+        } else data.bank -= settings.amount;
+
+        data.wallet -= settings.amount;
+        
         if (!data.networth) data.networth = 0;
         data.networth = data.bank + data.wallet;
         await saveUser(data);
         return {
             error: false,
-            type: 'success'
+            type: 'success',
+            amount: settings.amount
         };
 
     }
@@ -690,8 +720,8 @@ async function transferMoney(settings) {
         error: true,
         type: 'low-money'
     };
-    user1 = amount(user1, 'remove', 'bank', money);
-    user2 = amount(user2, 'add', 'bank', money);
+    user1 = amount(user1, 'remove', 'wallet', money);
+    user2 = amount(user2, 'add', 'wallet', money);
     await saveUser(user1, user2);
     return {
         error: false,
@@ -837,11 +867,11 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
                 inventory: newData
             }
         }, function (err, res) {
-            console.log(res || 'No RES')
-            console.log(err || 'No ERR')
+            // console.log(res || 'No RES')
+            // console.log(err || 'No ERR')
             if (err) return event.emit('debug', `[ CS => Error ] : Unable To Save Data to MongoDB ( updateInventory Function )`, err)
-              if (res.nModified) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
-             else event.emit('debug', `[ CS => Error ] : MongoDB Didn't Update the DB. ( updateInventory Function )`);
+            if (res.nModified) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
+            else event.emit('debug', `[ CS => Error ] : MongoDB Didn't Update the DB. ( updateInventory Function )`);
             db.close();
             event.emit('debug', `[ CS => Debug ] : Closing DB  ( updateInventory Function )`)
         });
