@@ -15,7 +15,7 @@
             user: user,
             guild: message.guild
         });
-        message.channel.send(`${user.tag}, has $${(result.wallet).toLocaleString()} in there wallet and $${(result.bank).toLocaleString()} in there bank. There Max bank has been set to ${result.rawData.bankSpace}`);
+        message.channel.send(`${user.tag}, has $${(result.wallet).toLocaleString()} in there wallet and $${(result.bank).toLocaleString()} in there bank. There Max bank has been set to $${(result.rawData.bankSpace.toLocaleString())}`);
     }
 
     exports.help = {

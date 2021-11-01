@@ -16,8 +16,8 @@
             if (result.type === 'low-money') return message.channel.send("You don't have that much money in bank.")
             if (result.type === 'no-money') return message.channel.send("You don't have any money to withdraw")
         } else {
-            if (result.type === 'all-success') return message.channel.send("You have withdraw'd all your money from your bank")
-            if (result.type === 'success') return message.channel.send(`You have withdraw $${result.amount} money from your bank.`)
+            if (result.type === 'all-success') return message.channel.send("You have withdraw'd all your money from your bank" + `\nNow you've $${result.rawData.wallet} In your wallet and $${result.rawData.bank} in your bank.`)
+            if (result.type === 'success') return message.channel.send(`You have withdraw $${result.amount} money from your bank.\nNow you've $${result.rawData.wallet} In your wallet and $${result.rawData.bank} in your bank.`)
 
         }
     }

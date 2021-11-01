@@ -23,6 +23,8 @@ cs.setDefaultWalletAmount(100);
 cs.setDefaultBankAmount(1000);
 cs.setMaxBankAmount(10000);
 cs.setMaxWalletAmount(10000);
+cs.searchForNewUpdate(true)
+cs.setDefaultBankLimitForUser(1000)
 
 client.on("ready", () => {
 

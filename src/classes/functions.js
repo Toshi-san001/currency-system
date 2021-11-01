@@ -6,6 +6,12 @@ let wallet;
 let bank;
 let maxBank;
 let maxWallet;
+let defaultBankLimit;
+
+// ===================================================================
+function setDefaultBankLimitForUser(amount) {
+    if (parseInt(amount)) defaultBankLimit = amount || 0;
+}
 // ===================================================================
 function setDefaultWalletAmount(amount) {
     if (parseInt(amount)) wallet = amount || 0;
@@ -71,16 +77,19 @@ function amount(data, type = 'add', where = 'wallet', amount) {
 async function setBankSpace(userID, guildID, newAmount) {
     let data = await findUser({}, userID, guildID)
     newAmount = parseInt(newAmount);
+    if (newAmount === 0) newAmount = 'zero';
     if (!newAmount) return {
         error: true,
         type: 'no-amount-provided'
-    }
-    data.bankSpace = newAmount;
+    };
+   
+
+    data.bankSpace = newAmount.replace('zero', 0);
     await saveUser(data);
     return {
         error: false,
         type: 'success',
-        amount: newAmount
+        amount: newAmount.replace('zero', 0)
     };
 }
 // ===================================================================
@@ -247,7 +256,7 @@ async function withdraw(settings) {
 };
 // ===================================================================
 async function deposite(settings) {
-    let data = await findUser(settings)
+    let data = await findUser(settings);
 
     const money = settings.amount;
     const wallet = data.wallet;
@@ -262,7 +271,7 @@ async function deposite(settings) {
     };
 
 
-    if (money.match(/all/gi) || money.match(/max/gi)) {
+    if (money === 'all' || money === 'max') {
 
         if (wallet === 0) return {
             error: true,
@@ -659,7 +668,8 @@ async function addMoney(settings) {
     await saveUser(data);
     return {
         error: false,
-        type: 'success'
+        type: 'success',
+        rawData: data
     };
 };
 // ===================================================================
@@ -680,7 +690,8 @@ async function removeMoney(settings) {
     await saveUser(data);
     return {
         error: false,
-        type: 'success'
+        type: 'success',
+        rawData: data
     };
 };
 // ===================================================================
@@ -760,7 +771,9 @@ async function transferMoney(settings) {
         error: false,
         type: 'success',
         money: money,
-        user2: settings.user2
+        user2: settings.user2,
+        rawData: user1,
+        rawData1: user2
     };
 };
 // ===================================================================
@@ -768,7 +781,8 @@ async function getUserItems(settings) {
     let data = await findUser(settings)
     return {
         error: false,
-        inventory: data.inventory
+        inventory: data.inventory,
+        rawData: data
     };
 };
 // ===================================================================
@@ -777,7 +791,8 @@ async function getShopItems(settings) {
     if (!data) data = await makeInventory(settings);
     return {
         error: false,
-        inventory: data.inventory
+        inventory: data.inventory,
+        rawData: data
     };
 };
 
@@ -818,6 +833,7 @@ async function findUser(settings, uid, gid) {
         guildID: gid || settings.guild.id || null
     });
     if (!find) find = await makeUser(settings, false, uid, gid)
+    if (defaultBankLimit > 0 && find.bankSpace == 0) find.bankSpace = defaultBankLimit;
     return find;
 };
 // ===================================================================
@@ -853,7 +869,8 @@ async function makeUser(settings, user2 = false, uid, gid) {
         userID: user,
         guildID: gid || settings.guild.id || null,
         wallet: wallet || 0,
-        bank: bank || 0
+        bank: bank || 0,
+        bankSpace: defaultBankLimit || 0
     });
     if (!newUser) throw new Error('Missing data to fetch from DB. (A function in Currency System is used and userID/guildID wasn\'t provided.)')
     await saveUser(newUser);
@@ -920,6 +937,10 @@ function sleep(milliseconds) {
 };
 
 // ===================================================================
+function searchForNewUpdate(state = true) {
+    if (state) _checkUpdate();
+}
+// ===================================================================
 // colors : https://github.com/shiena/ansicolor/blob/master/README.md
 async function _checkUpdate() {
     if (!require('node-fetch')) return;
@@ -931,7 +952,7 @@ async function _checkUpdate() {
         console.log('\x1b[32m' + '---------------------------------------------------')
         console.log('\x1b[33m' + `|            The module is\x1b[31m out of date!\x1b[33m           |`)
         console.log('\x1b[35m' + '|             New version is available!           |')
-        console.log('\x1b[34m' + `|                  ${require('../../package.json').version} --> ${packageData['dist-tags'].latest}                |`)
+        console.log('\x1b[34m' + `|                ${require('../../package.json').version} --> ${packageData['dist-tags'].latest}                |`)
         console.log('\x1b[36m' + '|        Run "npm i currency-system@latest"       |')
         console.log('\x1b[36m' + '|                    to update!                   |')
         console.log('\x1b[37m' + `|          View the full changelog here:          |`)
@@ -942,7 +963,6 @@ async function _checkUpdate() {
     }
 
 }
-_checkUpdate()
 // ===================================================================
 module.exports = {
     setDefaultWalletAmount,
@@ -978,6 +998,8 @@ module.exports = {
     info,
     setMaxBankAmount,
     setMaxWalletAmount,
-    setBankSpace
+    setBankSpace,
+    setDefaultBankLimitForUser,
+    searchForNewUpdate
 }
 module.exports.cs = event;
