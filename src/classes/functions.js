@@ -82,7 +82,7 @@ async function setBankSpace(userID, guildID, newAmount) {
         error: true,
         type: 'no-amount-provided'
     };
-   
+
 
     data.bankSpace = newAmount.replace('zero', 0);
     await saveUser(data);
@@ -322,7 +322,7 @@ async function deposite(settings) {
             data.bank -= Number(String(a - settings.amount).replace("-", ''));
         } else data.bank -= settings.amount;
 
-        data.wallet -= settings.amount;
+        data.wallet += settings.amount;
 
         if (!data.networth) data.networth = 0;
         data.networth = data.bank + data.wallet;
