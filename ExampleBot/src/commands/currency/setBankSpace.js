@@ -10,7 +10,6 @@ exports.run = async (client, message, args) => {
     } else if (!args[0]) {
         user = message.author;
     }
-
     let result = await cs.setBankSpace(user.id, message.guild.id, args[1]);
     if (result.error) return message.channel.send('Please provide number to setBank Limit to.');
     else return message.channel.send(`Successfully set Bank Limit of ${user.tag} to ${result.amount}`)

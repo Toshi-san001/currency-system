@@ -38,7 +38,7 @@ function connect(that) {
         connected = false;
         throw new TypeError(`${e}`);
     }).then(() => {
-        if (connected === true) console.info("Connected to DB successfully.")
+        if (connected) console.info("Connected to DB successfully.")
     });
 };
 // ===================================================================
@@ -84,12 +84,12 @@ async function setBankSpace(userID, guildID, newAmount) {
     };
 
 
-    data.bankSpace = newAmount.replace('zero', 0);
+    data.bankSpace = parseInt(String(newAmount).replace('zero', 0));
     await saveUser(data);
     return {
         error: false,
         type: 'success',
-        amount: newAmount.replace('zero', 0)
+        amount: data.bankSpace
     };
 }
 // ===================================================================
@@ -154,14 +154,8 @@ async function gamble(settings) {
 async function withdraw(settings) {
     let data = await findUser(settings)
 
-    const money = settings.amount;
-    const bank = data.bank;
-    /*
-        if (money !== "all" || money !== "max" || isNan(money)) return {
-            error: true,
-            type: 'money'
-        };
-    */
+    let money = String(settings.amount);
+
     if (!money) return {
         error: true,
         type: 'money'
@@ -173,84 +167,64 @@ async function withdraw(settings) {
 
 
     if (money === 'all' || money === 'max') {
-        if (bank === 0) return {
+        if (data.bank < 1) return {
             error: true,
             type: 'no-money'
         };
-        if (settings.amount > data.bank) return {
-            error: true,
-            type: 'low-money'
-        }
+        // if (settings.amount > data.bank) return {
+        //     error: true,
+        //     type: 'low-money'
+        // }
         data.wallet += data.bank;
         data.bank = 0;
-        if (maxWallet > 0 && data.wallet > maxWallet) {
-            const a = data.wallet - maxWallet;
-            if (a > 0) data.bank += a;
-            data.wallet = maxWallet
-        };
-        if (maxBank > 0 && data.bank > maxBank) {
-            const a = data.bank - maxBank;
-            if (a > 0) {
-                if (data.wallet !== maxWallet) data.wallet += a;
-            }
-            data.bank = maxBank
-        };
+        // if (maxWallet > 0 && data.wallet > maxWallet) {
+        //     const a = data.wallet - maxWallet;
+        //     if (a > 0) data.bank += a;
+        //     data.wallet = maxWallet
+        // };
+        // if (maxBank > 0 && data.bank > maxBank) {
+        //     const a = data.bank - maxBank;
+        //     if (a > 0) {
+        //         if (data.wallet !== maxWallet) data.wallet += a;
+        //     }
+        //     data.bank = maxBank
+        // };
 
         if (!data.networth) data.networth = 0;
         data.networth = data.bank + data.wallet;
         await saveUser(data);
         return {
             error: false,
+            rawData: data,
             type: 'all-success'
         }
 
     } else {
-        if (bank < parseInt(money)) return {
+        money = parseInt(money);
+        if (data.bank < parseInt(money)) return {
             error: true,
             type: 'low-money'
         };
-        if (isNaN(settings.amount)) return {
+        if (isNaN(money)) return {
             error: true,
             type: 'money'
         }
 
-        if (parseInt(settings.amount) > data.bank) return {
+        if (money > data.bank) return {
             error: true,
             type: 'low-money'
-        }
+        };
 
-        data.wallet += parseInt(settings.amount)
-        data.bank -= parseInt(settings.amount)
+
+        data.wallet += money
+        data.bank -= money
 
         await saveUser(data);
         return {
             error: false,
             type: 'success',
-            amount: settings.amount
-        }
-
-        data.wallet += data.bank;
-        data.bank = 0;
-        if (maxWallet > 0 && data.wallet > maxWallet) {
-            const a = data.wallet - maxWallet;
-            if (a > 0) data.bank += a;
-            data.wallet = maxWallet
-        };
-        if (maxBank > 0 && data.bank > maxBank) {
-            const a = data.bank - maxBank;
-            if (a > 0) {
-                if (data.wallet !== maxWallet) data.wallet += a;
-            }
-            data.bank = maxBank
-        };
-
-        if (!data.networth) data.networth = 0;
-        data.networth = data.bank + data.wallet;
-        await saveUser(data);
-        return {
-            error: false,
-            type: 'success',
-            amount: parseInt(money)
+            amount: money,
+            rawData: data
         };
     }
 };
@@ -258,8 +232,7 @@ async function withdraw(settings) {
 async function deposite(settings) {
     let data = await findUser(settings);
 
-    const money = settings.amount;
-    const wallet = data.wallet;
+    let money = String(settings.amount);
 
     if (!money) return {
         error: true,
@@ -279,50 +252,59 @@ async function deposite(settings) {
         };
         data.bank += data.wallet;
         data.wallet = 0;
-        if (maxWallet > 0 && data.wallet > maxWallet) {
-            const a = data.wallet - maxWallet;
-            if (a > 0) data.bank += a;
-            data.wallet = maxWallet
-        };
-        if (maxBank > 0 && data.bank > maxBank) {
-            const a = data.bank - maxBank;
-            if (a > 0) {
-                if (data.wallet !== maxWallet) data.wallet += a;
-            }
-            data.bank = maxBank
-        };
 
-        if (!data.networth) data.networth = 0;
-        data.networth = data.bank + data.wallet;
+        // if (maxWallet > 0 && data.wallet > maxWallet) {
+        //     const a = data.wallet - maxWallet;
+        //     if (a > 0) data.bank += a;
+        //     data.wallet = maxWallet
+        // };
+        // if (maxBank > 0 && data.bank > maxBank) {
+        //     const a = data.bank - maxBank;
+        //     if (a > 0) {
+        //         if (data.wallet !== maxWallet) data.wallet += a;
+        //     }
+        //     data.bank = maxBank
+        // };
+
         if (data.bankSpace > 0 && data.bank > data.bankSpace) {
             const a = data.bank;
             data.bank = data.bankSpace;
             data.wallet += Number(String(a - data.bankSpace).replace("-", ''));
-        } else {
-            if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
         }
+        // else {
+        //     if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
+        // }
+
+        if (!data.networth) data.networth = 0;
+        data.networth = data.bank + data.wallet;
         await saveUser(data);
         return {
             error: false,
+            rawData: data,
             type: 'all-success'
         };
 
 
     } else {
-        if (parseInt(money) > wallet) return {
+        money = parseInt(money);
+        if (!money) return {
+            error: true,
+            type: 'money'
+        }
+        if (money > data.wallet) return {
             error: true,
             type: 'low-money'
         };
 
-        data.bank += settings.amount;
+        data.bank += money;
 
-        if ((data.wallet - settings.amount) < 0) {
+        if ((data.wallet - money) < 0) {
             const a = data.wallet;
             data.wallet = 0;
-            data.bank -= Number(String(a - settings.amount).replace("-", ''));
-        } else data.bank -= settings.amount;
+            data.bank -= Number(String(a - money).replace("-", ''));
+        } //else data.bank -= money;
 
-        data.wallet += settings.amount;
+        data.wallet -= money;
 
         if (!data.networth) data.networth = 0;
         data.networth = data.bank + data.wallet;
@@ -331,14 +313,17 @@ async function deposite(settings) {
             const a = data.bank;
             data.bank = data.bankSpace;
             data.wallet += Number(String(a - data.bankSpace).replace("-", ''));
-        } else {
-            if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
         }
+        // else {
+        //     if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
+        // }
+
         await saveUser(data);
         return {
             error: false,
+            rawData: data,
             type: 'success',
-            amount: settings.amount
+            amount: money
         };
 
     }
