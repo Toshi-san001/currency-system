@@ -1,16 +1,14 @@
     const CurrencySystem = require("currency-system");
     const cs = new CurrencySystem;
     exports.run = async (client, message, args) => {
-        let user = {
-            id: 1
-        };
+        let user;
         if (message.mentions.users.first()) {
             user = message.mentions.users.first();
         } else if (args[0]) {
-            user = await message.guild.members.fetch(args[0].slice(3, -1));
+            user = await message.guild.members.fetch(args[0]);
             if (user) user = user.user;
-            // console.log(user)
-        }
+        };
+        if (!user) return message.channel.send("Please mention a user or provide a valid user ID.");
 
         // if (user.bot || user === client.user) return message.channel.send("This user is a bot.");
         if (!client.users.cache.get(user.id) || !user) return message.channel.send('Sorry, you forgot to mention somebody.');

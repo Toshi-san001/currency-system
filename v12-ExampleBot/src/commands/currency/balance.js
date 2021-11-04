@@ -1,14 +1,12 @@
     const CurrencySystem = require("currency-system");
     const cs = new CurrencySystem;
     exports.run = async (client, message, args) => {
-        let user;
+        let user = message.author;
         if (message.mentions.users.first()) {
             user = message.mentions.users.first();
         } else if (args[0]) {
-            user = message.guild.members.cache.get(args[0]);
+            user = await message.guild.members.fetch(args[0]);
             if (user) user = user.user;
-        } else if (!args[0]) {
-            user = message.author;
         }
 
         let result = await cs.balance({

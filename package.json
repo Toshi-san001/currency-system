@@ -1,11 +1,11 @@
 {
   "name": "currency-system",
-  "version": "2.6.28",
+  "version": "2.6.29",
   "description": "An easy to use Currency System using Mongo DB.",
   "main": "src/index.js",
   "scripts": {
     "doc": "jsdoc -c jsdoc.json",
-    "start": "npm i && cd ./ExampleBot && npm test"
+    "start": "cd ./v12-ExampleBot && npm test"
   },
   "repository": {
     "type": "git",
