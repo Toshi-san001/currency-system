@@ -16,7 +16,7 @@ CurrencySystem.cs.on('debug', (debug, error) => {
 });
 client.login(token);
 //sets mongo url
-cs.setMongoURL(mongourl);
+cs.setMongoURL(mongourl, true);
 //sets default wallet amount when ever new user is created.
 cs.setDefaultWalletAmount(100);
 //sets default bank amount when ever new user is created.

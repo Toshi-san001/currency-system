@@ -34,5 +34,5 @@
 
     exports.conf = {
         aliases: [],
-        cooldown: 5
+        cooldown: 0.1
     }

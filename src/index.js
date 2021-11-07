@@ -21,9 +21,9 @@ const {
  * @class CurrencySystem
  */
 class CurrencySystem {
-    setMongoURL(password) {
+    setMongoURL(password, toLog = true) {
         if (!password.startsWith("mongodb+srv")) throw new TypeError("Invalid MongoURL");
-        connect(password);
+        connect(password, toLog);
         process.mongoURL = password;
         event.emit('debug', `[ CS => Debug ] : Successfully saved MongoDB URL ( Used in Shop Functions )`)
     };
@@ -63,41 +63,40 @@ class CurrencySystem {
             error: true,
             type: 'low-money'
         };
-        else {
-            data.wallet -= inventoryData.inventory[thing].price;
-            let done = false;
-            let makeItem = true;
+        data.wallet -= inventoryData.inventory[thing].price;
+        let done = false;
+        let makeItem = true;
 
-            for (let j in data.inventory) {
-                if (inventoryData.inventory[thing].name === data.inventory[j].name) makeItem = false;
-            };
-
-
-            if (makeItem == false) {
-                for (let i in inventoryData.inventory) {
-                    for (let j in data.inventory) {
-                        if (inventoryData.inventory[i].name === data.inventory[j].name) {
-                            data.inventory[j].amount++
-                            done = true;
-                        };
-                    };
-                }
-            }
-
-            if (done == false) {
-                data.inventory.push({
-                    name: inventoryData.inventory[thing].name,
-                    amount: 1
-                });
-            };
-            event.emit('debug', `[ CS => Debug ] : Updating Inventory ( Buy Function )`)
-            await updateInventory(_getDbURL(), data.inventory, settings, "currencies");
-            return {
-                error: false,
-                type: 'success',
-                inventory: inventoryData.inventory[thing]
-            };
+        for (let j in data.inventory) {
+            if (inventoryData.inventory[thing].name === data.inventory[j].name) makeItem = false;
         };
+
+
+        if (makeItem == false) {
+            for (let i in inventoryData.inventory) {
+                for (let j in data.inventory) {
+                    if (inventoryData.inventory[i].name === data.inventory[j].name) {
+                        data.inventory[j].amount++
+                        done = true;
+                    };
+                };
+            }
+        }
+
+        if (done == false) {
+            data.inventory.push({
+                name: inventoryData.inventory[thing].name,
+                amount: 1
+            });
+        };
+        event.emit('debug', `[ CS => Debug ] : Updating Inventory ( Buy Function )`)
+        await updateInventory(_getDbURL(), data.inventory, settings, "currencies");
+        return {
+            error: false,
+            type: 'success',
+            inventory: inventoryData.inventory[thing]
+        };
+
     };
 
     async addItem(settings) {
@@ -122,6 +121,7 @@ class CurrencySystem {
         let item = {
             name: String(settings.inventory.name) || 'Air',
             price: parseInt(settings.inventory.price) || 0,
+            description: String(settings.inventory.description) || 'No Description',
         }
         inventoryData.inventory.push(item);
         await updateInventory(_getDbURL(), inventoryData.inventory, settings)
@@ -181,7 +181,6 @@ class CurrencySystem {
     };
     async removeUserItem(settings) {
         let data = await findUser(settings);
-        if (!data) data = await makeUser(settings);
 
         let thing = parseInt(settings.item);
         if (!thing) return {
@@ -220,7 +219,8 @@ class CurrencySystem {
 
         return {
             error: false,
-            inventory: deletedDB
+            inventory: deletedDB,
+            rawData: data
         };
     };
 

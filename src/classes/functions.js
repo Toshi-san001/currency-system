@@ -29,7 +29,7 @@ function setMaxWalletAmount(amount) {
     if (parseInt(amount)) maxWallet = amount || 0;
 }
 // ===================================================================
-function connect(that) {
+function connect(that, toLog = true) {
     let connected = true;
     db.connect(that, {
         useNewUrlParser: true,
@@ -38,7 +38,7 @@ function connect(that) {
         connected = false;
         throw new TypeError(`${e}`);
     }).then(() => {
-        if (connected) console.info("Connected to DB successfully.")
+        if (connected && toLog) console.info("Connected to DB successfully.");
     });
 };
 // ===================================================================
@@ -60,11 +60,9 @@ function amount(data, type = 'add', where = 'wallet', amount) {
         else data.wallet -= amount;
     };
     if (data.bankSpace > 0 && data.bank > data.bankSpace) {
-        console.log('so bank is more.')
         const a = data.bank;
         data.bank = data.bankSpace;
         data.wallet += Number(String(a - data.bankSpace).replace("-", ''));
-        console.log(data)
     } else {
         if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
     }
@@ -412,6 +410,31 @@ async function monthly(settings) {
     };
     else {
         data.lastMonthly = Date.now();
+        data = amount(data, 'add', 'wallet', settings.amount);
+
+        await saveUser(data);
+
+        return {
+            error: false,
+            type: 'success',
+            amount: settings.amount
+        };
+
+    };
+};
+// ===================================================================
+async function yearly(settings) {
+    let data = await findUser(settings)
+
+    let yearly = data.lastYearly;
+    let timeout = 3.156e+10;
+    if (yearly !== null && timeout - (Date.now() - yearly) / 1000 > 0) return {
+        error: true,
+        type: 'time',
+        time: parseSeconds(Math.floor(timeout - (Date.now() - yearly) / 1000))
+    };
+    else {
+        data.lastYearly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount);
 
         await saveUser(data);
@@ -829,6 +852,9 @@ async function getInventory(settings) {
     let find = await inv.findOne({
         guildID: settings.guild.id || null
     });
+    if (find.inventory.length > 0) find.inventory.forEach(a => {
+        if (!a.description) a.description = 'No Description.';
+    });
     return find;
 };
 // ===================================================================
@@ -840,7 +866,7 @@ async function makeInventory(settings) {
         guildID: settings.guild.id || null,
         inventory: []
     });
-    await saveUser(inventory);
+    // await saveUser(inventory);
     return inventory;
 };
 // ===================================================================
@@ -858,7 +884,7 @@ async function makeUser(settings, user2 = false, uid, gid) {
         bankSpace: defaultBankLimit || 0
     });
     if (!newUser) throw new Error('Missing data to fetch from DB. (A function in Currency System is used and userID/guildID wasn\'t provided.)')
-    await saveUser(newUser);
+    // await saveUser(newUser);
     return newUser;
 
 };
@@ -866,16 +892,22 @@ async function makeUser(settings, user2 = false, uid, gid) {
 async function saveUser(data, data2) {
     // this will prevent error
     // ParallelSaveError: Can't save() the same doc multiple times in parallel.
-    await sleep(Math.floor((Math.random() * 10) + 1) * 100) // 100 - 1000 random  Number generator
-    await data.save(function (err) {
-        if (err) throw err;
-    });
-    if (data2) {
+    // await sleep(Math.floor((Math.random() * 10) + 1) * 100) // 100 - 1000 random  Number generator
+    // await data.save(function (err) {
+    //     if (err) throw err;
+    // });
+    // if (data2) {
+    //     await sleep(Math.floor((Math.random() * 10) + 1) * 100) // 100 - 1000 random  Number generator
+    //     await data2.save(function (err) {
+    //         if (err) throw err;
+    //     });
+    // }
+    process.nextTick(async () => {
         await sleep(Math.floor((Math.random() * 10) + 1) * 100) // 100 - 1000 random  Number generator
-        await data2.save(function (err) {
-            if (err) throw err;
-        });
-    }
+        data.save(_ => _ ? console.error(`ERROR Occured while saving data (Currency-system) \n${'='.repeat(50)}\n${_+'\n'+'='.repeat(50)}`) : 'No Error');
+        if (data2) data2.save(_ => _ ? console.error(`ERROR Occured while saving data (Currency-system) \n${'='.repeat(50)}\n${_+'\n'+'='.repeat(50)}`) : 'No Error');
+    }, data, data2);
+
 };
 
 // ===================================================================
@@ -903,10 +935,8 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
                 inventory: newData
             }
         }, function (err, res) {
-            // console.log(res || 'No RES')
-            // console.log(err || 'No ERR')
             if (err) return event.emit('debug', `[ CS => Error ] : Unable To Save Data to MongoDB ( updateInventory Function )`, err)
-            if (res.nModified) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
+            if (res.result.n) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);
             else event.emit('debug', `[ CS => Error ] : MongoDB Didn't Update the DB. ( updateInventory Function )`);
             db.close();
             event.emit('debug', `[ CS => Debug ] : Closing DB  ( updateInventory Function )`)
@@ -961,6 +991,7 @@ module.exports = {
     globalLeaderboard,
     work,
     monthly,
+    yearly,
     weekly,
     quaterly,
     hafly,

@@ -9,7 +9,7 @@ exports.run = async (client, message, args) => {
     const embed = new Discord.MessageEmbed()
         .setDescription('Shop!')
     for (let key in inv) {
-        embed.addField(`${parseInt(key) + 1} - **${inv[key].name}:**`, `Price: ${inv[key].price}`)
+        embed.addField(`${parseInt(key) + 1} - Price: $${inv[key].price} - **${inv[key].name}:**`, inv[key].description)
     }
     message.channel.send(embed)
 

@@ -1,25 +1,32 @@
 const {
-    Schema,
-    model
-  } = require("mongoose");
-  
-    module.exports = model('currency', new Schema({
-      userID: String,
-      guildID: String,
-      inventory: Array,
-      wallet: { type: Number, default: 0 },
-      bank: { type: Number, default: 0 },
-      networth: { type: Number, default: 0 },
-      lastUpdated: { type: Date, default: new Date() },
-      lastGamble: { type: Number, default: 0 },
-      lastHourly: { type: Number, default: 0 },
-      lastQuaterly: { type: Number, default: 0 },
-      lastHafly: { type: Number, default: 0 },
-      lastRob: { type: Number, default: 0 },
-      lastDaily: { type: Number, default: 0 },
-      lastWeekly: { type: Number, default: 0 },
-      lastMonthly: { type: Number, default: 0 },
-      lastBegged: { type: Number, default: 0 },
-      lastWork: { type: Number, default: 0 },
-      bankSpace: { type: Number, default: 0 }
-    }));
+  Schema,
+  model
+} = require("mongoose");
+const def = {
+  type: Number,
+  default: 0
+};
+module.exports = model('currency', new Schema({
+  userID: String,
+  guildID: String,
+  inventory: Array,
+  wallet: def,
+  bank: def,
+  networth: def,
+  lastUpdated: {
+    type: Date,
+    default: new Date()
+  },
+  lastGamble: def,
+  lastHourly: def,
+  lastQuaterly: def,
+  lastHafly: def,
+  lastRob: def,
+  lastDaily: def,
+  lastWeekly: def,
+  lastMonthly: def,
+  lastYearly: def,
+  lastBegged: def,
+  lastWork: def,
+  bankSpace: def
+}));

@@ -11,11 +11,16 @@ exports.run = async (client, message, args) => {
     let Price = await message.channel.awaitMessages(msg => msg.author.id == message.author.id, {
         max: 1
     });
+     message.channel.send('What should be its Description?');
+    let description = await message.channel.awaitMessages(msg => msg.author.id == message.author.id, {
+        max: 1
+    });
     let result = await cs.addItem({
         guild: message.guild,
         inventory: {
             name: Name.first().content,
-            price: parseInt(Price.first().content)
+            price: parseInt(Price.first().content),
+            description: description.first().content
         }
     });
     if (result.error) {
