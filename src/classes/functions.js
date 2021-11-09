@@ -62,11 +62,11 @@ function amount(data, type = 'add', where = 'wallet', amount) {
     if (data.bankSpace > 0 && data.bank > data.bankSpace) {
         const a = data.bank;
         data.bank = data.bankSpace;
-        data.wallet += Number(String(a - data.bankSpace).replace("-", ''));
-    } else {
-        if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
-    }
-    if (maxWallet > 0 && data.wallet > maxWallet) data.wallet = maxWallet;
+        data.wallet += Math.abs(a - data.bankSpace); //Number(String(a - data.bankSpace).replace("-", ''));
+    } //else {
+        // if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
+    // }
+    // if (maxWallet > 0 && data.wallet > maxWallet) data.wallet = maxWallet;
     if (!data.networth) data.networth = 0;
     data.networth = data.bank + data.wallet;
     return data;
@@ -95,25 +95,25 @@ async function gamble(settings) {
 
     let data = await findUser(settings)
 
-    const money = settings.amount;
+    const money = parseInt(settings.amount);
     const result = Math.floor(Math.random() * 10);
     const balance = data.wallet;
     let lastGamble = data.lastGamble;
     let cooldown = settings.cooldown || 50;
-    if (!parseInt(money)) return {
+    if (!money) return {
         error: true,
         type: 'amount'
     };
-    if (isNaN(parseInt(money))) return {
+    if (isNaN(money)) return {
         error: true,
         type: 'nan'
     };
-    if (parseInt(money) > balance || !balance || balance === 0) return {
+    if (money > balance || !balance || balance === 0) return {
         error: true,
         type: 'low-money',
-        neededMoney: balance - parseInt(money)
+        neededMoney: Math.abs(balance - money)
     };
-    if (parseInt(money) < settings.minAmount || 0) return {
+    if (money < settings.minAmount || 0) return {
         error: true,
         type: 'gamble-limit',
         minAmount: settings.minAmount || 0
@@ -126,24 +126,24 @@ async function gamble(settings) {
 
     if (result <= 5) {
         data.lastGamble = Date.now();
-        data = amount(data, 'remove', 'wallet', parseInt(money))
+        data = amount(data, 'remove', 'wallet', money)
         await saveUser(data);
         return {
             error: false,
             type: 'lost',
-            amount: parseInt(money),
+            amount: money,
             wallet: data.wallet
         };
     } else if (result > 5) {
         data.lastGamble = Date.now();
 
-        data = amount(data, 'add', 'wallet', parseInt(money));
+        data = amount(data, 'add', 'wallet', money);
 
         await saveUser(data);
         return {
             error: false,
             type: 'won',
-            amount: parseInt(money),
+            amount: money,
             wallet: data.wallet
         };
     };
@@ -267,7 +267,7 @@ async function deposite(settings) {
         if (data.bankSpace > 0 && data.bank > data.bankSpace) {
             const a = data.bank;
             data.bank = data.bankSpace;
-            data.wallet += Number(String(a - data.bankSpace).replace("-", ''));
+            data.wallet += Math.abs(a - data.bankSpace); // Number(String(a - data.bankSpace).replace("-", ''));
         }
         // else {
         //     if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
@@ -293,13 +293,18 @@ async function deposite(settings) {
             error: true,
             type: 'low-money'
         };
+        if (data.bank == data.bankSpace) return {
+            error: true,
+            type: 'bank-full',
+            rawData: data
+        };
 
         data.bank += money;
 
         if ((data.wallet - money) < 0) {
             const a = data.wallet;
             data.wallet = 0;
-            data.bank -= Number(String(a - money).replace("-", ''));
+            data.bank -= Math.abs(a - money); //Number(String(a - money).replace("-", ''));
         } //else data.bank -= money;
 
         data.wallet -= money;
@@ -310,8 +315,9 @@ async function deposite(settings) {
         if (data.bankSpace > 0 && data.bank > data.bankSpace) {
             const a = data.bank;
             data.bank = data.bankSpace;
-            data.wallet += Number(String(a - data.bankSpace).replace("-", ''));
+            data.wallet += Math.abs(a - data.bankSpace); //Number(String(a - data.bankSpace).replace("-", ''));
         }
+
         // else {
         //     if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
         // }
