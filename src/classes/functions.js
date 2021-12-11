@@ -7,6 +7,7 @@ let bank;
 let maxBank;
 let maxWallet;
 let defaultBankLimit;
+let workCooldown = 0;
 
 // ===================================================================
 function setDefaultBankLimitForUser(amount) {
@@ -382,6 +383,7 @@ async function work(settings) {
 
     let lastWork = data.lastWork;
     let timeout = settings.cooldown;
+    workCooldown = timeout;
     if (lastWork !== null && timeout - (Date.now() - lastWork) / 1000 > 0) return {
         error: true,
         type: 'time',
@@ -719,6 +721,7 @@ async function info(userID, guildID) {
     let lastMonthlyy = true;
     let lastBeggedy = true;
     let lastQuaterlyy = true;
+    let lastWorkk = true;
     if (data.lastBegged !== null && 240 - (Date.now() - data.lastBegged) / 1000 > 0) lastBeggedy = false;
     if (data.lastHourly !== null && 3600 - (Date.now() - data.lastHourly) / 1000 > 0) lastHourlyy = false;
     if (data.lastDaily !== null && 86400 - (Date.now() - data.lastDaily) / 1000 > 0) lastDailyy = false;
@@ -726,6 +729,7 @@ async function info(userID, guildID) {
     if (data.lastQuaterly !== null && 12600 - (Date.now() - data.lastQuaterly) / 1000 > 0) lastQuaterlyy = false;
     if (data.lastWeekly !== null && 604800 - (Date.now() - data.lastWeekly) / 1000 > 0) lastWeeklyy = false;
     if (data.lastMonthly !== null && 2.592e+6 - (Date.now() - data.lastMonthly) / 1000 > 0) lastMonthlyy = false;
+    if (data.lastWork !== null && workCooldown - (Date.now() - data.lastWork) / 1000 > 0) lastWorkk = false;
     return {
         error: false,
         rawData: data,
@@ -757,6 +761,10 @@ async function info(userID, guildID) {
             Quaterly: {
                 used: lastQuaterlyy,
                 timeLeft: parseSeconds(Math.floor(12600 - (Date.now() - data.lastQuaterly) / 1000))
+            },
+            Work: {
+                used: lastWorkk,
+                timeLeft: parseSeconds(Math.floor(12600 - (Date.now() - data.lastWork) / 1000))
             }
         })
     }
