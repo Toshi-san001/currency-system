@@ -293,7 +293,7 @@ async function deposite(settings) {
             error: true,
             type: 'low-money'
         };
-        if (data.bank == data.bankSpace) return {
+        if ((data.bankSpace > 0) && (data.bank == data.bankSpace)) return {
             error: true,
             type: 'bank-full',
             rawData: data
@@ -785,6 +785,7 @@ async function transferMoney(settings) {
         error: false,
         type: 'success',
         money: money,
+        user: settings.user,
         user2: settings.user2,
         rawData: user1,
         rawData1: user2

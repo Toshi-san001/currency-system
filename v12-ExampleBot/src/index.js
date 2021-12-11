@@ -38,14 +38,15 @@ client.on("ready", () => {
             cmdLogChannel: "ChannelID HERE",
             cmdLogMessage: "{user.tag} ( {user.id} ) ran a command: {command} in {guild.name} ( {channel.name} )"
         },
-        cooldownMSG: "Calm down, {user.tag}, You still have {time} before you can run the command again.",
+        cooldownmessage: "Calm down, {user.tag}, You still have {time} before you can run the command again.",
         EnableCommmandonEdit: true,
         mentionPrefix: true,
         prefix: "?",
-        owners: ["544084793122488331", "YOUR TRUSTED FRIEND Discord ID"],
+        owners: ["664560526218756117", "YOUR TRUSTED FRIEND Discord ID"],
         path: __dirname + "/commands",
         logCommands: false
     });
     //This will load all commands.
 });
-process.on("unhandledRejection", _ => logger.error(_.stack + '\n' + '='.repeat(20)))
+process.on("unhandledRejection", _ => logger.error(_.stack + '\n' + '='.repeat(20)));
+
