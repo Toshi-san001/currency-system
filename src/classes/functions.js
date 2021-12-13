@@ -65,7 +65,7 @@ function amount(data, type = 'add', where = 'wallet', amount) {
         data.bank = data.bankSpace;
         data.wallet += Math.abs(a - data.bankSpace); //Number(String(a - data.bankSpace).replace("-", ''));
     } //else {
-        // if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
+    // if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
     // }
     // if (maxWallet > 0 && data.wallet > maxWallet) data.wallet = maxWallet;
     if (!data.networth) data.networth = 0;
@@ -810,8 +810,7 @@ async function getUserItems(settings) {
 };
 // ===================================================================
 async function getShopItems(settings) {
-    let data = await getInventory(settings)
-    if (!data) data = await makeInventory(settings);
+    let data = await getInventory(settings);
     return {
         error: false,
         inventory: data.inventory,
@@ -830,7 +829,7 @@ function parseSeconds(seconds) {
     seconds = parseInt(seconds % 60);
 
     if (days) {
-        return `${days} day, ${hours} hours, ${minutes} minutes`
+        return `${days} days, ${hours} hours, ${minutes} minutes`
     } else if (hours) {
         return `${hours} hours, ${minutes} minutes, ${seconds} seconds`
     } else if (minutes) {
@@ -867,6 +866,7 @@ async function getInventory(settings) {
     let find = await inv.findOne({
         guildID: settings.guild.id || null
     });
+    if (!find) find = await makeInventory(settings);
     if (find.inventory.length > 0) find.inventory.forEach(a => {
         if (!a.description) a.description = 'No Description.';
     });
@@ -949,6 +949,8 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
             $set: {
                 inventory: newData
             }
+        }, {
+            upsert: true
         }, function (err, res) {
             if (err) return event.emit('debug', `[ CS => Error ] : Unable To Save Data to MongoDB ( updateInventory Function )`, err)
             if (res.result.n) event.emit('debug', `[ CS => Debug ] : Successfully Saved Data ( updateInventory Function )`);

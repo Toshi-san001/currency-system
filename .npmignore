@@ -1,5 +1,5 @@
-ExampleBot
-documentation
-jsdoc.json
+v12-ExampleBot
+v13-ExampleBot
 package-lock.json
-db.json
+.github
+node_modules
