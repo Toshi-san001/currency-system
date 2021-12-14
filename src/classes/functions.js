@@ -419,7 +419,7 @@ async function monthly(settings) {
     else {
         data.lastMonthly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount);
-        if ((Date.now() - lastMonthly) / 1000 > timeout * 2) data.streak.monthly = 1;
+        if ((Date.now() - monthly) / 1000 > timeout * 2) data.streak.monthly = 1;
         else data.streak.monthly += 1;
         await saveUser(data);
 
