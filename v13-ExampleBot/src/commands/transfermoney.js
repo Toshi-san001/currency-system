@@ -13,7 +13,7 @@
         let result = await cs.transferMoney({
             user: message.user,
             user2: user,
-            guild: message.member.guild,
+            guild: message.guild,
             amount: money
         });
         if (result.error) return message.reply(`You don't have enough money in your wallet.`);

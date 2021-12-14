@@ -3,7 +3,7 @@ const CurrencySystem = require("currency-system");
 const cs = new CurrencySystem;
 exports.run = async (client, message, args) => {
     // Command Start's here
-    let result = await cs.info(message.user.id, message.member.guild.id);
+    let result = await cs.info(message.user.id, message.guild.id);
     const embed = new Discord.MessageEmbed()
         .setDescription('Info about ' + message.user.tag);
     let unUsed = '';

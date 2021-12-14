@@ -4,7 +4,7 @@ exports.run = async (client, message, args) => {
 
     let result = await cs.weekly({
         user: message.user,
-        guild: message.member.guild,
+        guild: message.guild,
         amount: 100,
 
     });

@@ -3,7 +3,7 @@ const cs = new CurrencySystem;
 exports.run = async (client, message, args) => {
     const user = message.options.getUser('user') || message.user;
 
-    let result = await cs.setBankSpace(user.id, message.member.guild.id,  message.options.getInteger('amount') || 0);
+    let result = await cs.setBankSpace(user.id, message.guild.id,  message.options.getInteger('amount') || 0);
     if (result.error) return message.reply('Please provide number to setBank Limit to.');
     else return message.reply(`Successfully set Bank Limit of ${user.tag} to ${result.amount}`)
 

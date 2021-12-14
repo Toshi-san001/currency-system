@@ -8,7 +8,7 @@ exports.run = async (client, message, args) => {
     let haveItem = false;
     const arr = await cs.getUserItems({
         user: message.user,
-        guild: message.member.guild,
+        guild: message.guild,
     });
     let i;
     for (key in arr.inventory) {
@@ -19,13 +19,13 @@ exports.run = async (client, message, args) => {
         let money = Math.floor((Math.random() * 10) + 1) * 100 // 100 - 1000
         let result = await cs.addMoney({
             user: message.user,
-            guild: message.member.guild,
+            guild: message.guild,
             amount: money,
             wheretoPutMoney: 'wallet'
         });
         await cs.removeUserItem({
             user: message.user,
-            guild: message.member.guild,
+            guild: message.guild,
             item: i
         });
         if (result.error) {

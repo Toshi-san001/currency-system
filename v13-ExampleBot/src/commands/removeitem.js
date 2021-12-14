@@ -4,7 +4,7 @@ const cs = new CurrencySystem;
 exports.run = async (client, message, args) => {
     if (!args[0].value) return message.reply('Which item to remove?')
     let result = await cs.removeItem({
-        guild: message.member.guild,
+        guild: message.guild,
         item: parseInt(args[0].value)
     });
     if (result.error) {

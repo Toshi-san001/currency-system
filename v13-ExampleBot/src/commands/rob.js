@@ -8,7 +8,7 @@
         let result = await cs.rob({
             user: message.user,
             user2: user,
-            guild: message.member.guild,
+            guild: message.guild,
             minAmount: 100,
             successPercentage: 5,
             cooldown: 25, //25 seconds,

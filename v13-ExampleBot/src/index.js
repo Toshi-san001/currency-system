@@ -42,7 +42,7 @@ for (const file of require('fs').readdirSync('./src/commands').filter(file => fi
     const command = require(`./commands/${file}`);
     if (command.help.data) client.commands.set(command.help.data.name, command);
 };
-console.log(Array.from(client.commands).map(a => a[1].help.name))
+// console.log(Array.from(client.commands).map(a => a[1].help.name))
 client.on('ready', () => client.guilds.cache.get(guildID).commands.set(Array.from(client.commands.values()).map(a => a.help.data)))
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;

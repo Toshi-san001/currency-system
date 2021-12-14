@@ -10,7 +10,7 @@
         let money = parseInt(amount);
         let result = await cs.addMoney({
             user: user,
-            guild: message.member.guild,
+            guild: message.guild,
             amount: money,
             wheretoPutMoney: wheretoPutMoney
         });

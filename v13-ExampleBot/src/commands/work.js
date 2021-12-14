@@ -4,7 +4,7 @@
 
         let result = await cs.work({
             user: message.user,
-            guild: message.member.guild,
+            guild: message.guild,
             maxAmount: 100,
             replies: ['Programmer', 'Builder', 'Waiter', 'Busboy', 'Chief', 'Mechanic'],
             cooldown: 25 //25 seconds,

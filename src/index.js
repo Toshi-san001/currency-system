@@ -211,7 +211,6 @@ class CurrencySystem {
                 };
             }
         }
-
         const deletedDB = data.inventory[thing];
         if (done == false) data.inventory.splice(thing, 1);
 

@@ -5,7 +5,7 @@ exports.run = async (client, message, args) => {
     if (!args[0].value) return message.reply('Which item to remove?')
     let result = await cs.removeUserItem({
         user: message.user,
-        guild: message.member.guild,
+        guild: message.guild,
         item: parseInt(args[0].value)
     });
     if (result.error) {
@@ -26,7 +26,7 @@ exports.help = {
             name: 'item',
             type: 'INTEGER',
             description: 'Item Number from Inventory',
-            required: false,
+            required: true,
         }]
     }
 };

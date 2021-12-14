@@ -4,7 +4,7 @@ const cs = new CurrencySystem;
 
 exports.run = async (client, message, args) => {
 
-    let data = await cs.leaderboard(message.member.guild.id);
+    let data = await cs.leaderboard(message.guild.id);
     if (data.length < 1) return message.reply("Nobody's in leaderboard yet.");
     const msg = new Discord.MessageEmbed();
     let pos = 0;

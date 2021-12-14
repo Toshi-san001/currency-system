@@ -65,7 +65,7 @@ exports.run = async (client, message, args) => {
             const money = 5000;
             let result = await cs.removeMoney({
                 user: message.user,
-                guild: message.member.guild, // { id: null }
+                guild: message.guild, // { id: null }
                 amount: money,
             });
             message.followUp(`Shit, ${message.user.tag} you lost $${money}! You now have $${result.rawData.wallet} in your wallet!`);
@@ -76,7 +76,7 @@ exports.run = async (client, message, args) => {
             const money = 10000;
             let result = await cs.addMoney({
                 user: message.user,
-                guild: message.member.guild, // { id: null }
+                guild: message.guild, // { id: null }
                 amount: money,
             });
             message.followUp(`Congrats, ${message.user.tag} you won $${money}! You now have $${result.rawData.wallet} in your wallet!`);

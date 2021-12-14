@@ -5,7 +5,7 @@ exports.run = async (client, message, args) => {
     const user = message.options.getUser('user') || message.user;
     let result = await cs.getUserItems({
         user: user,
-        guild: message.member.guild,
+        guild: message.guild,
     });
     let inv = result.inventory.slice(0, 10)
     const embed = new Discord.MessageEmbed()

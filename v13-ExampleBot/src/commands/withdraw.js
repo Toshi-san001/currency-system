@@ -7,7 +7,7 @@
 
         let result = await cs.withdraw({
             user: message.user,
-            guild: message.member.guild,
+            guild: message.guild,
             amount: money
         });
         if (result.error) {

@@ -3,7 +3,7 @@ const cs = new CurrencySystem;
 exports.run = async (client, message) => {
     const arr = await cs.getUserItems({
         user: message.user,
-        guild: message.member.guild
+        guild: message.guild.id
     });
     if (!arr.inventory.length) return message.reply("You don't have any banknotes!");
     for (i in arr.inventory) {
@@ -12,14 +12,14 @@ exports.run = async (client, message) => {
             const removeItem = await cs.removeUserItem({
                 user: message.user,
                 item: i,
-                guild: message.member.guild
+                guild: message.guild.id
             });
             if (removeItem.error) {
                 console.log('Bot tried to remove item number ' + i)
                 return message.reply("Unknown error occured see console.")
             };
             const ToincreasedAmount = 5000 + removeItem.rawData.bankSpace;
-            const result = await cs.setBankSpace(message.user.id, message.member.guild.id, ToincreasedAmount);
+            const result = await cs.setBankSpace(message.user.id, message.guild.id, ToincreasedAmount);
             if (!result.error) return message.reply(`Successfully set Bank Limit to ${result.amount}`);
             else return message.reply(`Error: occured: ${result.error}`);
 

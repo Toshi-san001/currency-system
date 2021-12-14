@@ -7,7 +7,7 @@ exports.run = async (client, message, args) => {
     if (isNaN(thing)) return message.reply('Please provide valid item number')
     let result = await cs.buy({
         user: message.user,
-        guild: message.member.guild,
+        guild: message.guild,
         item: parseInt(args[0].value)
     });
     if (result.error) {

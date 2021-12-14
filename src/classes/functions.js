@@ -576,6 +576,8 @@ async function hourly(settings) {
 };
 // ===================================================================
 async function rob(settings) {
+    if (typeof settings.guild === 'string') settings.guild.id = settings.guild;
+    if (typeof settings.user === 'string') settings.user.id = settings.user;
     if (!settings.guild) settings.guild = {
         id: null
     }
@@ -771,6 +773,12 @@ async function info(userID, guildID) {
 }
 // ===================================================================
 async function transferMoney(settings) {
+    if (typeof settings.user === 'string') settings.user = {
+        id: settings.user
+    }
+    if (typeof settings.guild === 'string') settings.guild = {
+        id: settings.guild
+    }
     if (!settings.guild) settings.guild = {
         id: null
     }
@@ -847,6 +855,13 @@ function testChance(successPercentage) {
 // Basic Functions
 // ===================================================================
 async function findUser(settings, uid, gid) {
+    if (typeof settings.user === 'string') settings.user = {
+        id: settings.user
+    }
+    if (typeof settings.guild === 'string') settings.guild = {
+        id: settings.guild
+    }
+
     if (!settings.guild) settings.guild = {
         id: null
     }
@@ -860,6 +875,12 @@ async function findUser(settings, uid, gid) {
 };
 // ===================================================================
 async function getInventory(settings) {
+    if (typeof settings.user === 'string') settings.user = {
+        id: settings.user
+    }
+    if (typeof settings.guild === 'string') settings.guild = {
+        id: settings.guild
+    }
     if (!settings.guild) settings.guild = {
         id: null
     }
@@ -874,6 +895,12 @@ async function getInventory(settings) {
 };
 // ===================================================================
 async function makeInventory(settings) {
+    if (typeof settings.user === 'string') settings.user = {
+        id: settings.user
+    }
+    if (typeof settings.guild === 'string') settings.guild = {
+        id: settings.guild
+    }
     if (!settings.guild) settings.guild = {
         id: null
     }
@@ -886,6 +913,12 @@ async function makeInventory(settings) {
 };
 // ===================================================================
 async function makeUser(settings, user2 = false, uid, gid) {
+    if (typeof settings.user === 'string') settings.user = {
+        id: settings.user
+    }
+    if (typeof settings.guild === 'string') settings.guild = {
+        id: settings.guild
+    }
     if (!settings.guild) settings.guild = {
         id: null
     }
@@ -928,6 +961,12 @@ async function saveUser(data, data2) {
 // ===================================================================
 function updateInventory(mongoURL, newData, settings, collection = "inventory-currencies") {
     event.emit('debug', `[ CS => Debug ] : UpdateInventory function is executed.`)
+    if (typeof settings.user === 'string') settings.user = {
+        id: settings.user
+    }
+    if (typeof settings.guild === 'string') settings.guild = {
+        id: settings.guild
+    }
     if (!settings.guild) settings.guild = {
         id: null
     };

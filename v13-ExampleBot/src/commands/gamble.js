@@ -7,7 +7,7 @@
 
         let result = await cs.gamble({
             user: message.user,
-            guild: message.member.guild,
+            guild: message.guild,
             amount: money,
             minAmount: 1,
             cooldown: 25 //25 seconds
