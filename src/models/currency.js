@@ -6,6 +6,10 @@ const def = {
   type: Number,
   default: 0
 };
+const def2 = {
+  type: Number,
+  default: 1
+};
 module.exports = model('currency', new Schema({
   userID: String,
   guildID: String,
@@ -29,13 +33,13 @@ module.exports = model('currency', new Schema({
   lastBegged: def,
   lastWork: def,
   bankSpace: def,
- /*  streak: {
-    hourly: def,
-    daily: def,
-    weekly: def,
-    monthly: def,
-    yearly: def,
-    hafly: def,
-    quaterly: def,
-  } */
+  streak: {
+    hourly: def2,
+    daily: def2,
+    weekly: def2,
+    monthly: def2,
+    yearly: def2,
+    hafly: def2,
+    quaterly: def2,
+  }
 }));

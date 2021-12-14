@@ -9,7 +9,7 @@ exports.run = async (client, message, args) => {
 
     });
     if (result.error) return message.reply(`You have used daily recently Try again in ${result.time}`);
-    else message.reply(`You have earned $${result.amount}.`)
+    else message.reply(`You have earned $${result.amount}. Your streak is now ${result.rawData.streak.daily}`);
 }
 
 exports.help = {

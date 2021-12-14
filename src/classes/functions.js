@@ -419,13 +419,15 @@ async function monthly(settings) {
     else {
         data.lastMonthly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount);
-
+        if ((Date.now() - lastMonthly) / 1000 > timeout * 2) data.streak.monthly = 1;
+        else data.streak.monthly += 1;
         await saveUser(data);
 
         return {
             error: false,
             type: 'success',
-            amount: settings.amount
+            amount: settings.amount,
+            rawData: data
         };
 
     };
@@ -444,13 +446,15 @@ async function yearly(settings) {
     else {
         data.lastYearly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount);
-
+        if ((Date.now() - lastYearly) / 1000 > timeout * 2) data.streak.yearly = 1;
+        else data.streak.yearly += 1;
         await saveUser(data);
 
         return {
             error: false,
             type: 'success',
-            amount: settings.amount
+            amount: settings.amount,
+            rawData: data
         };
 
     };
@@ -469,12 +473,15 @@ async function weekly(settings) {
     else {
         data.lastWeekly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount);
+        if ((Date.now() - lastWeekly) / 1000 > timeout * 2) data.streak.weekly = 1;
+        else data.streak.weekly += 1;
         await saveUser(data);
 
         return {
             error: false,
             type: 'success',
-            amount: settings.amount
+            amount: settings.amount,
+            rawData: data
         };
 
     };
@@ -493,12 +500,15 @@ async function quaterly(settings) {
     else {
         data.lastQuaterly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount);
+        if ((Date.now() - quaterly) / 1000 > timeout * 2) data.streak.quaterly = 1;
+        else data.streak.quaterly += 1;
         await saveUser(data);
 
         return {
             error: false,
             type: 'success',
-            amount: settings.amount
+            amount: settings.amount,
+            rawData: data
         };
 
     };
@@ -517,12 +527,15 @@ async function hafly(settings) {
     else {
         data.lastHafly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount);
+        if ((Date.now() - lastHafly) / 1000 > timeout * 2) data.streak.hafly = 1;
+        else data.streak.hafly += 1;
         await saveUser(data);
 
         return {
             error: false,
             type: 'success',
-            amount: settings.amount
+            amount: settings.amount,
+            rawData: data
         };
     };
 };
@@ -540,12 +553,15 @@ async function daily(settings) {
     else {
         data.lastDaily = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount);
+        if ((Date.now() - daily) / 1000 > timeout * 2) data.streak.daily = 1;
+        else data.streak.daily += 1;
         await saveUser(data);
 
         return {
             error: false,
             type: 'success',
-            amount: settings.amount
+            amount: settings.amount,
+            rawData: data
         };
 
     };
@@ -556,6 +572,7 @@ async function hourly(settings) {
 
     let lastHourly = data.lastHourly;
     let timeout = 3600;
+
     if (lastHourly !== null && timeout - (Date.now() - lastHourly) / 1000 > 0) return {
         error: true,
         type: 'time',
@@ -564,12 +581,15 @@ async function hourly(settings) {
     else {
         data.lastHourly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount);
+        if ((Date.now() - lastHourly) / 1000 > timeout * 2) data.streak.hourly = 1;
+        else data.streak.hourly += 1;
         await saveUser(data);
 
         return {
             error: false,
             type: 'success',
-            amount: settings.amount
+            amount: settings.amount,
+            rawData: data
         };
 
     };
@@ -871,6 +891,14 @@ async function findUser(settings, uid, gid) {
     });
     if (!find) find = await makeUser(settings, false, uid, gid)
     if (defaultBankLimit > 0 && find.bankSpace == 0) find.bankSpace = defaultBankLimit;
+    if (!find.streak) find.streak = {};
+    if (!find.streak.hourly) find.streak.hourly = 1;
+    if (!find.streak.daily) find.streak.daily = 1;
+    if (!find.streak.weekly) find.streak.weekly = 1;
+    if (!find.streak.monthly) find.streak.monthly = 1;
+    if (!find.streak.yearly) find.streak.yearly = 1;
+    if (!find.streak.hafly) find.streak.hafly = 1;
+    if (!find.streak.quaterly) find.streak.quaterly = 1;
     return find;
 };
 // ===================================================================
@@ -929,7 +957,16 @@ async function makeUser(settings, user2 = false, uid, gid) {
         guildID: gid || settings.guild.id || null,
         wallet: wallet || 0,
         bank: bank || 0,
-        bankSpace: defaultBankLimit || 0
+        bankSpace: defaultBankLimit || 0,
+        streak: {
+            hourly: 1,
+            daily: 1,
+            weekly: 1,
+            monthly: 1,
+            yearly: 1,
+            hafly: 1,
+            quaterly: 1,
+        }
     });
     if (!newUser) throw new Error('Missing data to fetch from DB. (A function in Currency System is used and userID/guildID wasn\'t provided.)')
     // await saveUser(newUser);

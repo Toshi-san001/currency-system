@@ -9,7 +9,7 @@ exports.run = async (client, message, args) => {
 
     });
     if (result.error) return message.reply(`You have used hafly recently Try again in ${result.time}`);
-    else return message.reply(`You have earned $${result.amount}.`)
+    else return message.reply(`You have earned $${result.amount}. Your streak is now ${result.rawData.streak.hafly}`);
 }
 
 exports.help = {
