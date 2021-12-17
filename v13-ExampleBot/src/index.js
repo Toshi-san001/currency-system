@@ -26,6 +26,7 @@ client.login(token);
 cs.setMongoURL(mongourl);
 // Set Default Bank Amount when a new user is created!
 cs.setDefaultBankAmount(1000);
+cs.setDefaultWalletAmount(1000)
 //  Its bank space limit (can be changed according to per user) here 0 means infinite.
 cs.setMaxBankAmount(10000);
 // Set Default Maximum Amount of Wallet Currency a user can have! (can be changed according to per user) here 0 means infinite.
@@ -42,7 +43,7 @@ for (const file of require('fs').readdirSync('./src/commands').filter(file => fi
     const command = require(`./commands/${file}`);
     if (command.help.data) client.commands.set(command.help.data.name, command);
 };
-// console.log(Array.from(client.commands).map(a => a[1].help.name))
+// console.log(Array.from(client.commands).map(a => a[1].help.name).join(" "))
 client.on('ready', () => client.guilds.cache.get(guildID).commands.set(Array.from(client.commands.values()).map(a => a.help.data)))
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;

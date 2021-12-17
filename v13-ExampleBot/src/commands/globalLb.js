@@ -14,7 +14,9 @@ exports.run = async (client, message, args) => {
         msg.addField(`${pos} - **${client.users.cache.get(e.userID).username}**`, `Wallet: **${e.wallet}** - Bank: **${e.bank}**`, true);
     });
 
-    message.reply({embeds:[msg]}).catch();
+    message.reply({
+        embeds: [msg]
+    }).catch();
 
 }
 
@@ -22,8 +24,8 @@ exports.help = {
     name: "globallb",
     data: {
         name: 'globallb',
-    description: "show's Global leaderboard.",
-    options: []
+        description: "show's Global leaderboard.",
+        options: []
     }
 }
 

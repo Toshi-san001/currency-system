@@ -16,8 +16,8 @@ exports.help = {
     name: "quaterly",
     data: {
         name: 'quaterly',
-    description: "a way to earn money, quaterly",
-    options: []
+        description: "a way to earn money, quaterly",
+        options: []
     }
 };
 

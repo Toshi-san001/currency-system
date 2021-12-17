@@ -15,15 +15,17 @@ exports.run = async (client, message, args) => {
         msg.addField(`${pos} - **${client.users.cache.get(e.userID).username}**`, `Wallet: **${e.wallet}** - Bank: **${e.bank}**`, true);
     });
 
-    message.reply({embeds:[msg]}).catch();
+    message.reply({
+        embeds: [msg]
+    }).catch();
 }
 
 exports.help = {
     name: "leaderboard",
     data: {
         name: 'leaderboard',
-    description: "show's guild leaderboard.",
-    options: []
+        description: "show's guild leaderboard.",
+        options: []
     }
 }
 

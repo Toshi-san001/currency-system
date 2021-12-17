@@ -99,6 +99,10 @@ class CurrencySystem {
 
     };
 
+    async addUserItem (...args) {
+        return await buy(...args);
+    };
+
     async addItem(settings) {
         let inventoryData = await getInventory(settings);
         if (!inventoryData) inventoryData = await makeInventory(settings);
