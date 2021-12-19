@@ -9,22 +9,19 @@ exports.run = async (client, message, args) => {
     const embed = new Discord.MessageEmbed()
         .setDescription('Shop!')
     for (let key in inv) {
-        embed.addField(`${parseInt(key) + 1} - Price: $${inv[key].price} - **${inv[key].name}:**`, inv[key].description)
+        embed.addField(`${parseInt(key) + 1} - **${inv[key].name}:** for $${inv[key].price}`, 'Description: ' + inv[key].description)
     }
     message.reply({
         embeds: [embed]
-    })
-
-
-
+    });
 }
 
 exports.help = {
     name: "shop",
     data: {
         name: 'shop',
-    description: "A way to see shop",
-    options: []
+        description: "A way to see shop",
+        options: []
     }
 };
 

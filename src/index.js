@@ -11,8 +11,6 @@ const event = require('./classes/functions').cs;
 const {
     findUser,
     getInventory,
-    makeInventory,
-    makeUser,
     saveUser,
     connect,
     updateInventory,
@@ -35,16 +33,10 @@ class CurrencySystem {
         event.emit('debug', `[ CS => Debug ] : Buy Function is Executed.`)
         let inventoryData = await getInventory(settings);
         event.emit('debug', `[ CS => Debug ] : Fetching Inventory. ( Buy Function )`)
-        if (!inventoryData) {
-            inventoryData = await makeInventory(settings);
-            event.emit('debug', `[ CS => Debug ] : Making new Inventory ( Buy Function )`)
-        }
+
         event.emit('debug', `[ CS => Debug ] : Fetching User ( Buy Function )`)
         let data = await findUser(settings)
-        if (!data) {
-            data = await makeUser(settings);
-            event.emit('debug', `[ CS => Debug ] : Making new User ( Buy Function )`)
-        }
+
         if (!settings.guild) settings.guild = {
             id: null
         }
@@ -99,13 +91,12 @@ class CurrencySystem {
 
     };
 
-    async addUserItem (...args) {
+    async addUserItem(...args) {
         return await buy(...args);
     };
 
     async addItem(settings) {
         let inventoryData = await getInventory(settings);
-        if (!inventoryData) inventoryData = await makeInventory(settings);
         if (!settings.inventory) return {
             error: true,
             type: 'No-Inventory'
@@ -136,7 +127,6 @@ class CurrencySystem {
     };
     async removeItem(settings) {
         let inventoryData = await getInventory(settings);
-        if (!inventoryData) inventoryData = await makeInventory(settings);
 
         let thing = parseInt(settings.item);
         if (!thing) return {
@@ -158,6 +148,8 @@ class CurrencySystem {
         };
     };
     async setItems(settings) {
+        let inventoryData = await getInventory(settings);
+
         if (!settings.shop) return {
             error: true,
             type: 'No-Shop'
@@ -175,8 +167,10 @@ class CurrencySystem {
                 error: true,
                 type: 'Invalid-Shop-price'
             };
-        }
-        await updateInventory(_getDbURL(), settings.shop, settings)
+            if (!x.description) x.description = 'No Description.';
+        };
+        inventoryData.inventory = settings.shop;
+        await updateInventory(_getDbURL(), inventoryData.inventory, settings)
 
         return {
             error: false,

@@ -12,9 +12,8 @@ exports.run = async (client, message, args) => {
             name: 'Rolex',
             price: 1230
         }]
-    }).then(console.log)
-
-
+    });
+    return message.reply('Success!!')
 
 }
 
