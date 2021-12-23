@@ -9,7 +9,7 @@ exports.run = async (client, message, args) => {
         inventory: {
             name: message.options.getString('name'),
             price: message.options.getInteger('price'),
-            description: message.options.getString('description')
+            description: message.options.getString('description') || 'No Description'
         }
     });
     if (result.error) {

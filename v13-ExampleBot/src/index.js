@@ -16,10 +16,18 @@ const {
 const CurrencySystem = require("currency-system");
 const cs = new CurrencySystem;
 // Debug logs! Help in finding issues!
-CurrencySystem.cs.on('debug', (debug, error) => {
-    console.log(debug);
-    if (error) console.error(error);
-});
+CurrencySystem.cs
+    .on('debug', (debug, error) => {
+        console.log(debug);
+        if (error) console.error(error);
+    })
+    .on('userFetch', (user, functionName) => {
+        console.log(`( ${functionName} ) Fetched User:  ${client.users.cache.get(user.userID).tag}`);
+    })
+    .on('userUpdate', (oldData, newData) => {
+        console.log('User Updated: ' + client.users.cache.get(newData.userID).tag);
+    });
+
 // Login To Discord Bot Client!
 client.login(token);
 // Set MongoDB URL!

@@ -43,7 +43,7 @@ function connect(that, toLog = true) {
     });
 };
 // ===================================================================
-function amount(data, type = 'add', where = 'wallet', amount) {
+function amount(data, type = 'add', where = 'wallet', amount, by) {
     if (!data.bankSpace) data.bankSpace = maxBank || 0;
 
     if (where === 'bank') {
@@ -70,11 +70,13 @@ function amount(data, type = 'add', where = 'wallet', amount) {
     // if (maxWallet > 0 && data.wallet > maxWallet) data.wallet = maxWallet;
     if (!data.networth) data.networth = 0;
     data.networth = data.bank + data.wallet;
+    event.emit('balanceUpdate', data, by.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' '))
     return data;
 };
 // ===================================================================
 async function setBankSpace(userID, guildID, newAmount) {
-    let data = await findUser({}, userID, guildID)
+    let data = await findUser({}, userID, guildID, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     newAmount = parseInt(newAmount);
     if (newAmount === 0) newAmount = 'zero';
     if (!newAmount) return {
@@ -85,6 +87,7 @@ async function setBankSpace(userID, guildID, newAmount) {
 
     data.bankSpace = parseInt(String(newAmount).replace('zero', 0));
     await saveUser(data);
+    event.emit('userUpdate', oldData, data);
     return {
         error: false,
         type: 'success',
@@ -93,9 +96,8 @@ async function setBankSpace(userID, guildID, newAmount) {
 }
 // ===================================================================
 async function gamble(settings) {
-
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     const money = parseInt(settings.amount);
     const result = Math.floor(Math.random() * 10);
     const balance = data.wallet;
@@ -127,7 +129,7 @@ async function gamble(settings) {
 
     if (result <= 5) {
         data.lastGamble = Date.now();
-        data = amount(data, 'remove', 'wallet', money)
+        data = amount(data, 'remove', 'wallet', money, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
         await saveUser(data);
         return {
             error: false,
@@ -138,9 +140,10 @@ async function gamble(settings) {
     } else if (result > 5) {
         data.lastGamble = Date.now();
 
-        data = amount(data, 'add', 'wallet', money);
+        data = amount(data, 'add', 'wallet', money, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
 
         await saveUser(data);
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             type: 'won',
@@ -151,8 +154,8 @@ async function gamble(settings) {
 };
 // ===================================================================
 async function withdraw(settings) {
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     let money = String(settings.amount);
 
     if (!money) return {
@@ -191,6 +194,7 @@ async function withdraw(settings) {
 
         if (!data.networth) data.networth = 0;
         data.networth = data.bank + data.wallet;
+        event.emit('userUpdate', oldData, data);
         await saveUser(data);
         return {
             error: false,
@@ -219,6 +223,7 @@ async function withdraw(settings) {
         data.bank -= money
 
         await saveUser(data);
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             type: 'success',
@@ -229,8 +234,8 @@ async function withdraw(settings) {
 };
 // ===================================================================
 async function deposite(settings) {
-    let data = await findUser(settings);
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+    const oldData = data;
     let money = String(settings.amount);
 
     if (!money) return {
@@ -277,6 +282,7 @@ async function deposite(settings) {
         if (!data.networth) data.networth = 0;
         data.networth = data.bank + data.wallet;
         await saveUser(data);
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             rawData: data,
@@ -324,6 +330,7 @@ async function deposite(settings) {
         // }
 
         await saveUser(data);
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             rawData: data,
@@ -335,7 +342,7 @@ async function deposite(settings) {
 };
 // ===================================================================
 async function balance(settings) {
-    let data = await findUser(settings)
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
     if (!data.networth) data.networth = 0;
     data.networth = data.wallet + data.bank;
     return {
@@ -379,8 +386,8 @@ async function globalLeaderboard() {
 };
 // ===================================================================
 async function work(settings) {
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     let lastWork = data.lastWork;
     let timeout = settings.cooldown;
     workCooldown = timeout;
@@ -393,8 +400,9 @@ async function work(settings) {
 
         let amountt = Math.floor(Math.random() * settings.maxAmount || 100) + 1;
         data.lastWork = Date.now();
-        data = amount(data, 'add', 'wallet', amountt);
+        data = amount(data, 'add', 'wallet', amountt, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         await saveUser(data);
+        event.emit('userUpdate', oldData, data);
         let result = Math.floor((Math.random() * settings.replies.length));
         return {
             error: false,
@@ -407,8 +415,8 @@ async function work(settings) {
 };
 // ===================================================================
 async function monthly(settings) {
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     let monthly = data.lastMonthly;
     let timeout = 2.592e+6;
     if (monthly !== null && timeout - (Date.now() - monthly) / 1000 > 0) return {
@@ -418,11 +426,11 @@ async function monthly(settings) {
     };
     else {
         data.lastMonthly = Date.now();
-        data = amount(data, 'add', 'wallet', settings.amount);
+        data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         if ((Date.now() - monthly) / 1000 > timeout * 2) data.streak.monthly = 1;
         else data.streak.monthly += 1;
         await saveUser(data);
-
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             type: 'success',
@@ -434,8 +442,8 @@ async function monthly(settings) {
 };
 // ===================================================================
 async function yearly(settings) {
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     let yearly = data.lastYearly;
     let timeout = 3.156e+10;
     if (yearly !== null && timeout - (Date.now() - yearly) / 1000 > 0) return {
@@ -445,11 +453,11 @@ async function yearly(settings) {
     };
     else {
         data.lastYearly = Date.now();
-        data = amount(data, 'add', 'wallet', settings.amount);
+        data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         if ((Date.now() - lastYearly) / 1000 > timeout * 2) data.streak.yearly = 1;
         else data.streak.yearly += 1;
         await saveUser(data);
-
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             type: 'success',
@@ -461,8 +469,8 @@ async function yearly(settings) {
 };
 // ===================================================================
 async function weekly(settings) {
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     let weekly = data.lastWeekly;
     let timeout = 604800;
     if (weekly !== null && timeout - (Date.now() - weekly) / 1000 > 0) return {
@@ -472,11 +480,11 @@ async function weekly(settings) {
     };
     else {
         data.lastWeekly = Date.now();
-        data = amount(data, 'add', 'wallet', settings.amount);
-        if ((Date.now() - lastWeekly) / 1000 > timeout * 2) data.streak.weekly = 1;
+        data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+        if ((Date.now() - data.lastWeekly) / 1000 > timeout * 2) data.streak.weekly = 1;
         else data.streak.weekly += 1;
         await saveUser(data);
-
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             type: 'success',
@@ -488,8 +496,8 @@ async function weekly(settings) {
 };
 // ===================================================================
 async function quaterly(settings) {
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     let quaterly = data.lastQuaterly;
     let timeout = 21600;
     if (quaterly !== null && timeout - (Date.now() - quaterly) / 1000 > 0) return {
@@ -499,11 +507,11 @@ async function quaterly(settings) {
     };
     else {
         data.lastQuaterly = Date.now();
-        data = amount(data, 'add', 'wallet', settings.amount);
+        data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         if ((Date.now() - quaterly) / 1000 > timeout * 2) data.streak.quaterly = 1;
         else data.streak.quaterly += 1;
         await saveUser(data);
-
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             type: 'success',
@@ -515,8 +523,8 @@ async function quaterly(settings) {
 };
 // ===================================================================
 async function hafly(settings) {
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     let hafly = data.lastHafly;
     let timeout = 43200;
     if (hafly !== null && timeout - (Date.now() - hafly) / 1000 > 0) return {
@@ -526,11 +534,11 @@ async function hafly(settings) {
     };
     else {
         data.lastHafly = Date.now();
-        data = amount(data, 'add', 'wallet', settings.amount);
+        data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         if ((Date.now() - lastHafly) / 1000 > timeout * 2) data.streak.hafly = 1;
         else data.streak.hafly += 1;
         await saveUser(data);
-
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             type: 'success',
@@ -541,8 +549,8 @@ async function hafly(settings) {
 };
 // ===================================================================
 async function daily(settings) {
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     let daily = data.lastDaily;
     let timeout = 86400;
     if (daily !== null && timeout - (Date.now() - daily) / 1000 > 0) return {
@@ -552,11 +560,11 @@ async function daily(settings) {
     };
     else {
         data.lastDaily = Date.now();
-        data = amount(data, 'add', 'wallet', settings.amount);
+        data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         if ((Date.now() - daily) / 1000 > timeout * 2) data.streak.daily = 1;
         else data.streak.daily += 1;
         await saveUser(data);
-
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             type: 'success',
@@ -568,8 +576,8 @@ async function daily(settings) {
 };
 // ===================================================================
 async function hourly(settings) {
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     let lastHourly = data.lastHourly;
     let timeout = 3600;
 
@@ -580,11 +588,11 @@ async function hourly(settings) {
     };
     else {
         data.lastHourly = Date.now();
-        data = amount(data, 'add', 'wallet', settings.amount);
+        data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         if ((Date.now() - lastHourly) / 1000 > timeout * 2) data.streak.hourly = 1;
         else data.streak.hourly += 1;
         await saveUser(data);
-
+        event.emit('userUpdate', oldData, data);
         return {
             error: false,
             type: 'success',
@@ -601,14 +609,14 @@ async function rob(settings) {
     if (!settings.guild) settings.guild = {
         id: null
     }
-    let user1 = await findUser(settings)
-
+    let user1 = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = user1;
     let user2 = await cs.findOne({
         userID: settings.user2.id,
         guildID: settings.guild.id || null
     });
     if (!user2) user2 = await makeUser(settings, true)
-
+    const oldData2 = user2;
     let lastRob = user1.lastRob;
     let timeout = settings.cooldown;
 
@@ -637,10 +645,11 @@ async function rob(settings) {
     // 5 here is percentage of success.
     if (testChance(settings.successPercentage || 5)) {
         // Success!
-        user2 = amount(user2, 'remove', 'wallet', random);
-        user1 = amount(user1, 'add', 'wallet', random);
+        user2 = amount(user2, 'remove', 'wallet', random, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+        user1 = amount(user1, 'add', 'wallet', random, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
 
         await saveUser(user1, user2);
+        event.emit('userUpdate', oldData1, user1, oldData2, user2);
         return {
             error: false,
             type: 'success',
@@ -652,8 +661,8 @@ async function rob(settings) {
     } else {
         // Fail :(
         if (random > user1.wallet) random = user1.wallet;
-        user2 = amount(user2, 'add', 'wallet', random);
-        user1 = amount(user1, 'remove', 'wallet', random);
+        user2 = amount(user2, 'add', 'wallet', random, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+        user1 = amount(user1, 'remove', 'wallet', random, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         await saveUser(user1, user2);
         return {
             error: true,
@@ -667,8 +676,8 @@ async function rob(settings) {
 };
 // ===================================================================
 async function beg(settings) {
-    let data = await findUser(settings)
-
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = data;
     let beg = data.lastBegged; // XDDDD
     let timeout = 240;
     if (parseInt(settings.cooldown)) timeout = parseInt(settings.cooldown);
@@ -680,8 +689,9 @@ async function beg(settings) {
     else {
         const amountt = Math.round((settings.minAmount || 200) + Math.random() * (settings.maxAmount || 400));
         data.lastBegged = Date.now();
-        data = amount(data, 'add', 'wallet', amountt);
+        data = amount(data, 'add', 'wallet', amountt, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         await saveUser(data);
+        event.emit('userUpdate', oldData, data);
 
         return {
             error: false,
@@ -693,16 +703,17 @@ async function beg(settings) {
 };
 // ===================================================================
 async function addMoney(settings) {
-    let data = await findUser(settings);
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+    const oldData = data;
     if (String(settings.amount).includes("-")) return {
         error: true,
         type: 'negative-money'
     };
     let amountt = parseInt(settings.amount) || 0;
-    if (settings.wheretoPutMoney === "bank") data = amount(data, 'add', 'bank', amountt);
-    else data = amount(data, 'add', 'wallet', amountt);
+    if (settings.wheretoPutMoney === "bank") data = amount(data, 'add', 'bank', amountt, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+    else data = amount(data, 'add', 'wallet', amountt, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
 
-
+    event.emit('userUpdate', oldData, data);
     await saveUser(data);
     return {
         error: false,
@@ -712,20 +723,23 @@ async function addMoney(settings) {
 };
 // ===================================================================
 async function removeMoney(settings) {
-    let data = await findUser(settings)
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+    const oldData = data;
     if (String(settings.amount).includes("-")) return {
         error: true,
         type: 'negative-money'
     };
     if (settings.wheretoPutMoney === "bank") {
         if (settings.amount === 'all' || settings.amount === "max") data.bank = 0;
-        else data = amount(data, 'remove', 'bank', parseInt(settings.amount) || 0);
+        else data = amount(data, 'remove', 'bank', parseInt(settings.amount) || 0, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
     } else {
         if (settings.amount === 'all' || settings.amount === "max") data.wallet = 0;
-        else data = amount(data, 'remove', 'wallet', parseInt(settings.amount) || 0);
+        else data = amount(data, 'remove', 'wallet', parseInt(settings.amount) || 0, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
     }
 
     await saveUser(data);
+    event.emit('userUpdate', oldData, data);
+
     return {
         error: false,
         type: 'success',
@@ -734,7 +748,7 @@ async function removeMoney(settings) {
 };
 // ===================================================================
 async function info(userID, guildID) {
-    let data = await findUser({}, userID, guildID)
+    let data = await findUser({}, userID, guildID, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
 
     let lastHourlyy = true;
     let lastHaflyy = true;
@@ -802,21 +816,25 @@ async function transferMoney(settings) {
     if (!settings.guild) settings.guild = {
         id: null
     }
-    let user1 = await findUser(settings)
-
+    let user1 = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
+    const oldData = user1;
     let user2 = await cs.findOne({
         userID: settings.user2.id,
-        guildID: settings.guild.id || false
+        guildID: settings.guild.id || null
     });
-    if (!user2) user2 = await makeUser(settings, true)
+    if (!user2) user2 = await makeUser(settings, true);
+    const oldData1 = user2;
     let money = parseInt(settings.amount)
     if (user1.wallet < money) return {
         error: true,
         type: 'low-money'
     };
-    user1 = amount(user1, 'remove', 'wallet', money);
-    user2 = amount(user2, 'add', 'wallet', money);
+    user1 = amount(user1, 'remove', 'wallet', money, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+    user2 = amount(user2, 'add', 'wallet', money, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+
     await saveUser(user1, user2);
+    event.emit('userUpdate', oldData, user1, oldData1, user2);
+
     return {
         error: false,
         type: 'success',
@@ -829,7 +847,7 @@ async function transferMoney(settings) {
 };
 // ===================================================================
 async function getUserItems(settings) {
-    let data = await findUser(settings)
+    let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
     return {
         error: false,
         inventory: data.inventory,
@@ -874,7 +892,7 @@ function testChance(successPercentage) {
 };
 // Basic Functions
 // ===================================================================
-async function findUser(settings, uid, gid) {
+async function findUser(settings, uid, gid, by) {
     if (typeof settings.user === 'string') settings.user = {
         id: settings.user
     }
@@ -890,6 +908,7 @@ async function findUser(settings, uid, gid) {
         guildID: gid || settings.guild.id || null
     });
     if (!find) find = await makeUser(settings, false, uid, gid)
+
     if (defaultBankLimit > 0 && find.bankSpace == 0) find.bankSpace = defaultBankLimit;
     if (!find.streak) find.streak = {};
     if (!find.streak.hourly) find.streak.hourly = 1;
@@ -899,6 +918,8 @@ async function findUser(settings, uid, gid) {
     if (!find.streak.yearly) find.streak.yearly = 1;
     if (!find.streak.hafly) find.streak.hafly = 1;
     if (!find.streak.quaterly) find.streak.quaterly = 1;
+
+    event.emit('userFetch', find, by.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' '));
     return find;
 };
 // ===================================================================
@@ -919,6 +940,7 @@ async function getInventory(settings) {
     if (find.inventory.length > 0) find.inventory.forEach(a => {
         if (!a.description) a.description = 'No Description.';
     });
+    event.emit('userInventoryFetch', find)
     return find;
 };
 // ===================================================================
@@ -937,6 +959,7 @@ async function makeInventory(settings) {
         inventory: []
     });
     // await saveUser(inventory);
+    event.emit('userInventoryCreate', inventory);
     return inventory;
 };
 // ===================================================================
@@ -968,8 +991,9 @@ async function makeUser(settings, user2 = false, uid, gid) {
             quaterly: 1,
         }
     });
-    if (!newUser) throw new Error('Missing data to fetch from DB. (A function in Currency System is used and userID/guildID wasn\'t provided.)')
+    if (!newUser) throw new Error('Missing data to fetch from DB. (A function in Currency System is used and userID wasn\'t provided.)')
     // await saveUser(newUser);
+    event.emit('userCreate', newUser);
     return newUser;
 
 };

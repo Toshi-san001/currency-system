@@ -7,7 +7,6 @@ const event = require('./classes/functions').cs;
  * @file index.js
  */
 
-'use strict';
 const {
     findUser,
     getInventory,
@@ -35,7 +34,7 @@ class CurrencySystem {
         event.emit('debug', `[ CS => Debug ] : Fetching Inventory. ( Buy Function )`)
 
         event.emit('debug', `[ CS => Debug ] : Fetching User ( Buy Function )`)
-        let data = await findUser(settings)
+        let data = await findUser(settings, null, null, 'buy')
 
         if (!settings.guild) settings.guild = {
             id: null
@@ -178,7 +177,7 @@ class CurrencySystem {
         }
     };
     async removeUserItem(settings) {
-        let data = await findUser(settings);
+        let data = await findUser(settings, null, null, 'removeUserItem');
 
         let thing = parseInt(settings.item);
         if (!thing) return {

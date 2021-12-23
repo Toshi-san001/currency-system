@@ -7,7 +7,7 @@
         let amount = message.options.getInteger('amount');
 
         if (!amount) return message.reply("Enter amount of money to add.");
-        if (amount.includes("-")) return message.reply("You can't send negitive money.")
+        if (String(amount).includes("-")) return message.reply("You can't send negitive money.")
         let money = parseInt(amount);
 
         let result = await cs.transferMoney({
@@ -17,7 +17,7 @@
             amount: money
         });
         if (result.error) return message.reply(`You don't have enough money in your wallet.`);
-        else message.reply(`**${message.author.username}**, Successfully transfered **${result.money}** to **${result.user2.username}**`)
+        else message.reply(`**${message.user.username}**, Successfully transfered **${result.money}** to **${result.user2.username}**`)
 
     }
 
