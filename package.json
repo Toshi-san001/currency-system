@@ -1,6 +1,6 @@
 {
   "name": "currency-system",
-  "version": "2.6.38",
+  "version": "2.6.39",
   "description": "An easy to use Currency System using Mongo DB.",
   "main": "src/index.js",
   "scripts": {
