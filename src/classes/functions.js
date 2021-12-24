@@ -1048,6 +1048,9 @@ function updateInventory(mongoURL, newData, settings, collection = "inventory-cu
         db.db(mongoURL.split('/')[mongoURL.split('/').length - 1]).collection(collection).updateOne(query, {
             $set: {
                 inventory: newData
+            },
+            $setOnInsert: {
+                inventory: newData
             }
         }, {
             upsert: true
