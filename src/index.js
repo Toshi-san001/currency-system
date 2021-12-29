@@ -118,7 +118,7 @@ class CurrencySystem {
             description: String(settings.inventory.description) || 'No Description',
         }
         inventoryData.inventory.push(item);
-        await updateInventory(_getDbURL(), inventoryData.inventory, settings)
+        await updateInventory(_getDbURL(), inventoryData.inventory, settings, "inventory-currencies")
         return {
             error: false,
             item: item

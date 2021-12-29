@@ -649,7 +649,7 @@ async function rob(settings) {
         user1 = amount(user1, 'add', 'wallet', random, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
 
         await saveUser(user1, user2);
-        event.emit('userUpdate', oldData1, user1, oldData2, user2);
+        event.emit('userUpdate', oldData, user1, oldData2, user2);
         return {
             error: false,
             type: 'success',
@@ -664,6 +664,7 @@ async function rob(settings) {
         user2 = amount(user2, 'add', 'wallet', random, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         user1 = amount(user1, 'remove', 'wallet', random, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         await saveUser(user1, user2);
+        event.emit('userUpdate', oldData, user1, oldData2, user2);
         return {
             error: true,
             type: 'caught',
@@ -940,7 +941,7 @@ async function getInventory(settings) {
     if (find.inventory.length > 0) find.inventory.forEach(a => {
         if (!a.description) a.description = 'No Description.';
     });
-    event.emit('userInventoryFetch', find)
+    event.emit('guildInventoryFetch', find)
     return find;
 };
 // ===================================================================
@@ -959,7 +960,7 @@ async function makeInventory(settings) {
         inventory: []
     });
     // await saveUser(inventory);
-    event.emit('userInventoryCreate', inventory);
+    event.emit('guildInventoryCreate', inventory);
     return inventory;
 };
 // ===================================================================
