@@ -95,7 +95,6 @@ class CurrencySystem {
     };
 
     async addItem(settings) {
-        let inventoryData = await getInventory(settings);
         if (!settings.inventory) return {
             error: true,
             type: 'No-Inventory'
@@ -112,13 +111,31 @@ class CurrencySystem {
             error: true,
             type: 'Invalid-Inventory-Price'
         };
-        let item = {
+        const item = {
             name: String(settings.inventory.name) || 'Air',
             price: parseInt(settings.inventory.price) || 0,
             description: String(settings.inventory.description) || 'No Description',
+        };
+        if (typeof settings.guild === 'string') settings.guild = {
+            id: settings.guild
         }
-        inventoryData.inventory.push(item);
-        await updateInventory(_getDbURL(), inventoryData.inventory, settings, "inventory-currencies")
+        if (!settings.guild) settings.guild = {
+            id: null
+        };
+        require('./models/inventory').findOneAndUpdate({
+            guildID: settings.guild.id || null,
+        }, {
+            $push: {
+                inventory: item
+            }
+        }, {
+            upsert: true,
+            useFindAndModify: false
+        }, (e, d) => {
+            if (e) return console.log(e)
+        });
+
+
         return {
             error: false,
             item: item
@@ -139,8 +156,7 @@ class CurrencySystem {
         };
         const deletedDB = inventoryData.inventory[thing];
         inventoryData.inventory.splice(thing, 1);
-        await updateInventory(_getDbURL(), inventoryData.inventory, settings)
-
+        inventoryData.save();
         return {
             error: false,
             inventory: deletedDB
