@@ -184,9 +184,18 @@ class CurrencySystem {
             };
             if (!x.description) x.description = 'No Description.';
         };
-        inventoryData.inventory = settings.shop;
-        await updateInventory(_getDbURL(), inventoryData.inventory, settings)
-
+        require('./models/inventory').findOneAndUpdate({
+            guildID: settings.guild.id || null,
+        }, {
+            $set: {
+                inventory: settings.shop
+            }
+        }, {
+            upsert: true,
+            useFindAndModify: false
+        }, (e, d) => {
+            if (e) return console.log(e)
+        });
         return {
             error: false,
             type: 'success'
