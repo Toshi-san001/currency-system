@@ -25,73 +25,12 @@ class CurrencySystem {
         event.emit('debug', `[ CS => Debug ] : Successfully saved MongoDB URL ( Used in Shop Functions )`)
     };
 
-
-
-
     async buy(settings) {
-        event.emit('debug', `[ CS => Debug ] : Buy Function is Executed.`)
-        let inventoryData = await getInventory(settings);
-        event.emit('debug', `[ CS => Debug ] : Fetching Inventory. ( Buy Function )`)
-
-        event.emit('debug', `[ CS => Debug ] : Fetching User ( Buy Function )`)
-        let data = await findUser(settings, null, null, 'buy')
-
-        if (!settings.guild) settings.guild = {
-            id: null
-        }
-        let thing = parseInt(settings.item);
-        if (!thing) return {
-            error: true,
-            type: 'No-Item'
-        };
-        thing = thing - 1;
-        if (!inventoryData.inventory[thing]) return {
-            error: true,
-            type: 'Invalid-Item'
-        };
-
-        if (data.wallet < inventoryData.inventory[thing].price) return {
-            error: true,
-            type: 'low-money'
-        };
-        data.wallet -= inventoryData.inventory[thing].price;
-        let done = false;
-        let makeItem = true;
-
-        for (let j in data.inventory) {
-            if (inventoryData.inventory[thing].name === data.inventory[j].name) makeItem = false;
-        };
-
-
-        if (makeItem == false) {
-            for (let i in inventoryData.inventory) {
-                for (let j in data.inventory) {
-                    if (inventoryData.inventory[i].name === data.inventory[j].name) {
-                        data.inventory[j].amount++
-                        done = true;
-                    };
-                };
-            }
-        }
-
-        if (done == false) {
-            data.inventory.push({
-                name: inventoryData.inventory[thing].name,
-                amount: 1
-            });
-        };
-        event.emit('debug', `[ CS => Debug ] : Updating Inventory ( Buy Function )`)
-        await updateInventory(_getDbURL(), data.inventory, settings, "currencies");
-        return {
-            error: false,
-            type: 'success',
-            inventory: inventoryData.inventory[thing]
-        };
-
+        return await _buy(settings)
     };
 
-    async addUserItem(...args) {
-        return await buy(...args);
+    async addUserItem(settings) {
+        return await _buy(settings);
     };
 
     async addItem(settings) {
@@ -236,7 +175,19 @@ class CurrencySystem {
         const deletedDB = data.inventory[thing];
         if (done == false) data.inventory.splice(thing, 1);
 
-        await updateInventory(_getDbURL(), data.inventory, settings, 'currencies')
+        require('./models/currency').findOneAndUpdate({
+            guildID: settings.guild.id || null,
+            userID: settings.user.id || null
+        }, {
+            $set: {
+                inventory: data.inventory,
+            }
+        }, {
+            upsert: true,
+            useFindAndModify: false
+        }, (e, d) => {
+            if (e) return console.log(e)
+        });
 
         return {
             error: false,
@@ -256,3 +207,79 @@ function _getDbURL() {
     return url;
 };
 module.exports.cs = event;
+
+async function _buy(settings) {
+    event.emit('debug', `[ CS => Debug ] : Buy Function is Executed.`)
+    let inventoryData = await getInventory(settings);
+    event.emit('debug', `[ CS => Debug ] : Fetching Inventory. ( Buy Function )`)
+
+    event.emit('debug', `[ CS => Debug ] : Fetching User ( Buy Function )`)
+    let data = await findUser(settings, null, null, 'buy')
+
+    if (!settings.guild) settings.guild = {
+        id: null
+    }
+    let thing = parseInt(settings.item);
+    if (!thing) return {
+        error: true,
+        type: 'No-Item'
+    };
+    thing = thing - 1;
+    if (!inventoryData.inventory[thing]) return {
+        error: true,
+        type: 'Invalid-Item'
+    };
+
+    if (data.wallet < inventoryData.inventory[thing].price) return {
+        error: true,
+        type: 'low-money'
+    };
+    data.wallet -= inventoryData.inventory[thing].price;
+    let done = false;
+    let makeItem = true;
+
+    for (let j in data.inventory) {
+        if (inventoryData.inventory[thing].name === data.inventory[j].name) makeItem = false;
+    };
+
+
+    if (makeItem == false) {
+        for (let i in inventoryData.inventory) {
+            for (let j in data.inventory) {
+                if (inventoryData.inventory[i].name === data.inventory[j].name) {
+                    data.inventory[j].amount++
+                    done = true;
+                };
+            };
+        }
+    }
+
+    if (done == false) {
+        data.inventory.push({
+            name: inventoryData.inventory[thing].name,
+            amount: 1
+        });
+    };
+    require('./models/currency').findOneAndUpdate({
+        guildID: settings.guild.id || null,
+        userID: settings.user.id || null
+    }, {
+        $set: {
+            inventory: data.inventory,
+            wallet: data.wallet,
+
+        }
+    }, {
+        upsert: true,
+        useFindAndModify: false
+    }, (e, d) => {
+        if (e) return console.log(e)
+    });
+    event.emit('debug', `[ CS => Debug ] : Updating Inventory ( Buy Function )`)
+    return {
+        error: false,
+        type: 'success',
+        inventory: inventoryData.inventory[thing]
+    };
+
+}
