@@ -1,7 +1,7 @@
 const discord = require("discord.js");
 const fs = require('fs')
 const client = new discord.Client({
-    intents: [discord.Intents.FLAGS.GUILDS], //32767,
+    intents: 32767, //[discord.Intents.FLAGS.GUILDS, 'GUILD_MESSAGES'],
     allowedMentions: {
         // parse: ['users', 'roles'],
         repliedUser: false
@@ -14,6 +14,9 @@ const {
     guildID // THIS is guildID of server which will have all slahs commands.
 } = require("./config.json");
 const CurrencySystem = require("currency-system");
+const {
+    get
+} = require("http");
 const cs = new CurrencySystem;
 // Debug logs! Help in finding issues!
 CurrencySystem.cs
@@ -28,7 +31,7 @@ CurrencySystem.cs
         console.log('User Updated: ' + client.users.cache.get(newData.userID).tag);
     });
 
-// Login To Discord Bot Client!
+// Login To discord Bot Client!
 client.login(token);
 // Set MongoDB URL!
 cs.setMongoURL(mongourl);
@@ -70,6 +73,124 @@ client.on('interactionCreate', async interaction => {
         });
     }
 });
+
+client.on('messageCreate', async message => {
+    if (message.content == '?sendAllCommandsEmbed') {
+        let abc = '';
+        client.commands.map(a => a.help.name).sort((a, b) => a.localeCompare(b)).forEach(a => abc += `- [${a}](https://github.com/BIntelligent/currency-system/blob/main/v13-ExampleBot/src/commands/${a}.js)\n`);
+        const e = new discord.MessageEmbed()
+        e.setTitle('All Currency System Commands')
+        e.setColor('GREEN')
+        e.setDescription(abc)
+        message.channel.send({
+            embeds: [e]
+        });
+    }
+    if (['664560526218756117'].includes(message.author.id)) {
+        if (!message.content.startsWith('?eval')) return;
+        const embed = new discord.MessageEmbed()
+        embed.setTimestamp()
+        embed.setFooter(
+            "Requested by " + message.author.username,
+            message.author.displayAvatarURL({
+                format: "png",
+                dynamic: true
+            })
+        );
+        try {
+            const code = message.content.slice(6);
+            if (!code) return message.channel.send("Please include the code.")
+            let evaled;
+
+            // This method is to prevent someone that you trust, open the secret shit here.
+            if (code.includes(`client.token`) || code.includes(`client.login`)) {
+                evaled = "No";
+            } else {
+                try {
+                    if (code.includes("await")) evaled = eval("(async () => {" + code + "})()");
+                    else evaled = eval(code)
+                } catch (err) {
+                    embed.setDescription(err)
+                    message.channel.send({
+                        embeds: [embed]
+                    })
+
+                }
+            }
+
+            if (typeof evaled !== "string") evaled = require("util").inspect(evaled, {
+                depth: 0
+            });
+
+            let output = clean(evaled);
+            if (output.length > 2048) {
+                for (let i = 0; i < output.length; i += 2048) {
+                    const toSend = output.substring(i, Math.min(output.length, i + 2048));
+                    const e2 = new discord.MessageEmbed()
+                        .setDescription(toSend)
+                        .setColor("YELLOW")
+                        .setTimestamp()
+                        .setFooter(
+                            "Requested by " + message.author.username,
+                            message.author.displayAvatarURL({
+                                format: "png",
+                                dynamic: true
+                            })
+                        );
+
+                    message.channel.send({
+                        embeds: [e2]
+                    })
+                }
+            } else if (output.length < 2048) {
+                embed.setDescription("```" + output + "```").setColor("GREEN")
+            }
+
+            message.channel.send({
+                embeds: [embed]
+            })
+
+        } catch (error) {
+            let err = clean(error);
+            if (err.length > 2048) {
+                for (let i = 0; i < err.length; i += 2048) {
+                    const toSend = err.substring(i, Math.min(err.length, i + 2048));
+                    const e2 = new discord.MessageEmbed()
+                        .setDescription(toSend)
+                        .setColor("YELLOW")
+                        .setTimestamp()
+                        .setFooter(
+                            "Requested by " + message.author.username,
+                            message.author.displayAvatarURL({
+                                format: "png",
+                                dynamic: true
+                            })
+                        );
+
+                    message.channel.send({
+                        embeds: [e2]
+                    })
+
+                }
+            } else if (err.length < 2048) {
+                embed.setDescription("```" + err + "```").setColor("RED");
+            }
+
+            message.channel.send({
+                embeds: [embed]
+            })
+        }
+    }
+});
+
+function clean(string) {
+    if (typeof text === "string") {
+        return string.replace(/`/g, "`" + String.fromCharCode(8203))
+            .replace(/@/g, "@" + String.fromCharCode(8203))
+    } else {
+        return string;
+    }
+}
 
 Object.defineProperty(Array.prototype, "get", {
     value: function (arg) {
