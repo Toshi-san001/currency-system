@@ -703,6 +703,44 @@ async function beg(settings) {
     };
 };
 // ===================================================================
+async function addMoneyToAllUsers(settings) {
+    if (String(settings.amount).includes("-")) return {
+        error: true,
+        type: 'negative-money'
+    };
+    let amountt = parseInt(settings.amount) || 0;
+
+    if (typeof settings.guild === 'string') settings.guild = {
+        id: settings.guild
+    };
+    if (!settings.guild) settings.guild = {
+        id: null
+    };
+    let data = await cs.find({
+        guildID: settings.guild.id || null
+    });
+    if (!data) return {
+        error: true,
+        type: 'no-users'
+    }
+    const oldData = data;
+    data.forEach(async (user) => {
+        if (settings.wheretoPutMoney === "bank") user = amount(user, 'add', 'bank', amountt, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+        else user = amount(user, 'add', 'wallet', amountt, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+    });
+    event.emit('usersUpdate', oldData, data);
+
+    data.forEach(a => a.save(function (err, saved) {
+        if (err) console.log(err);
+    }));
+
+    return {
+        error: false,
+        type: 'success',
+        rawData: data
+    };
+};
+// ===================================================================
 async function addMoney(settings) {
     let data = await findUser(settings, null, null, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
     const oldData = data;
@@ -716,6 +754,49 @@ async function addMoney(settings) {
 
     event.emit('userUpdate', oldData, data);
     await saveUser(data);
+    return {
+        error: false,
+        type: 'success',
+        rawData: data
+    };
+};
+// ===================================================================
+async function removeMoneyFromAllUsers(settings) {
+    if (String(settings.amount).includes("-")) return {
+        error: true,
+        type: 'negative-money'
+    };
+    let amountt = parseInt(settings.amount) || 0;
+
+    if (typeof settings.guild === 'string') settings.guild = {
+        id: settings.guild
+    };
+    if (!settings.guild) settings.guild = {
+        id: null
+    };
+    let data = await cs.find({
+        guildID: settings.guild.id || null
+    });
+    if (!data) return {
+        error: true,
+        type: 'no-users'
+    }
+    const oldData = data;
+
+    data.forEach(async (user) => {
+        if (settings.wheretoPutMoney === "bank") {
+            if (settings.amount === 'all' || settings.amount === "max") user.bank = 0;
+            else user = amount(user, 'remove', 'bank', parseInt(settings.amount) || 0, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+        } else {
+            if (settings.amount === 'all' || settings.amount === "max") user.wallet = 0;
+            else user = amount(user, 'remove', 'wallet', parseInt(settings.amount) || 0, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
+        }
+    });
+    event.emit('usersUpdate', oldData, data);
+    data.forEach(a => a.save(function (err, saved) {
+        if (err) console.log(err);
+    }));
+
     return {
         error: false,
         type: 'success',
@@ -1134,6 +1215,8 @@ module.exports = {
     setMaxWalletAmount,
     setBankSpace,
     setDefaultBankLimitForUser,
-    searchForNewUpdate
+    searchForNewUpdate,
+    addMoneyToAllUsers,
+    removeMoneyFromAllUsers
 }
 module.exports.cs = event;

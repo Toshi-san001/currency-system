@@ -1,28 +1,27 @@
 const CurrencySystem = require("currency-system");
 const cs = new CurrencySystem;
 exports.run = async (client, message, args) => {
-    let user = args[2].member || message.member;
-    if (!message.member.permissions.has('ADMINISTRATOR')) return message.reply("You do not have requied permissions.")
     let wheretoPutMoney = args.get('where_to_put_money');
     if (wheretoPutMoney) wheretoPutMoney = 'bank';
     else wheretoPutMoney = 'wallet';
     let amount = args.get('amount')
     let money = parseInt(amount);
-    let result = await cs.removeMoney({
-        user: user,
-        guild: message.guild,
+    let result = await cs.removeMoneyFromAllUsers({
+        guild: message.guild.id,
         amount: money,
         wheretoPutMoney: wheretoPutMoney
     });
-    if (result.error) return message.reply("You cant remove negitive money");
-    else message.reply(`Successfully removed $${money} to ${user.user.username}, ( from ${wheretoPutMoney} )`)
+    if (result.error) {
+        if (result.type === 'negative-money') return message.reply("You cant remove negitive money");
+        else return message.reply('No User\'s found');
+    } else message.reply(`Successfully removed $${money} from ${result.rawData.length} people!, ( in ${wheretoPutMoney} )`)
 }
 
 exports.help = {
-    name: "removemoney",
+    name: "removemoneyfromallusers",
     data: {
-        name: 'removemoney',
-        description: "A way to remove the amount  of money from bank or wallet.",
+        name: 'removemoneyfromallusers',
+        description: "A way to remove the amount  of money in everyone's bank or wallet.",
         options: [{
                 name: 'amount',
                 type: 'INTEGER',
@@ -34,12 +33,6 @@ exports.help = {
                 type: 'BOOLEAN',
                 description: 'TRUE means bank, FALSE means wallet.',
                 required: true,
-            },
-            {
-                name: 'user',
-                type: 'USER',
-                description: 'The user you want to remove money to.',
-                required: false,
             }
         ]
     }

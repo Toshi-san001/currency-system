@@ -1,8 +1,8 @@
     const CurrencySystem = require("currency-system");
     const cs = new CurrencySystem;
     exports.run = async (client, message, args) => {
-        let user = args[0].member || message.member;
-        if (!user.permissions.has('ADMINISTRATOR')) return message.reply("You do not have requied permissions.")
+        let user = args[2].member || message.member;
+        if (!message.member.permissions.has('ADMINISTRATOR')) return message.reply("You do not have requied permissions.")
         let wheretoPutMoney = args.get('where_to_put_money');
         if (wheretoPutMoney) wheretoPutMoney = 'bank';
         else wheretoPutMoney = 'wallet';

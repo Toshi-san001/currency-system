@@ -29,7 +29,7 @@ CurrencySystem.cs
     })
     .on('userUpdate', (oldData, newData) => {
         console.log('User Updated: ' + client.users.cache.get(newData.userID).tag);
-    });
+    })
 
 // Login To discord Bot Client!
 client.login(token);
@@ -82,9 +82,11 @@ client.on('messageCreate', async message => {
         e.setTitle('All Currency System Commands')
         e.setColor('GREEN')
         e.setDescription(abc)
-        message.channel.send({
+        let m = await client.channels.cache.get('864746778573012992').messages.fetch('927593982194778142')
+        m.edit({
             embeds: [e]
         });
+        message.channel.send('Done!')
     }
     if (['664560526218756117'].includes(message.author.id)) {
         if (!message.content.startsWith('?eval')) return;
