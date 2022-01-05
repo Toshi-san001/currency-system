@@ -64,24 +64,25 @@ async function setBankSpace(userID, guildID, newAmount) {
     let data = await findUser({}, userID, guildID, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')))
     const oldData = data;
     newAmount = parseInt(newAmount);
-    if (newAmount === 0) newAmount = 'zero';
-    if (!newAmount) return {
+    if (!newAmount && newAmount !== 0) return {
         error: true,
-        type: 'no-amount-provided'
+        type: 'no-amount-provided',
+        rawData: data
     };
+    data.bankSpace = newAmount
 
-
-    data.bankSpace = parseInt(String(newAmount).replace('zero', 0));
     await saveUser(data);
     event.emit('userUpdate', oldData, data);
     if (oldData.bankSpace !== data.bankSpace) return {
         error: false,
         type: 'success',
-        amount: data.bankSpace
+        amount: data.bankSpace,
+        rawData: data
     };
     else return {
         error: true,
-        type: 'same-amount'
+        type: 'same-amount',
+        rawData: data
     }
 }
 // ===================================================================
