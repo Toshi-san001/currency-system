@@ -6,13 +6,9 @@ let wallet;
 let bank;
 let maxBank;
 let maxWallet;
-let defaultBankLimit;
 let workCooldown = 0;
 
-// ===================================================================
-function setDefaultBankLimitForUser(amount) {
-    if (parseInt(amount)) defaultBankLimit = amount || 0;
-}
+
 // ===================================================================
 function setDefaultWalletAmount(amount) {
     if (parseInt(amount)) wallet = amount || 0;
@@ -50,24 +46,14 @@ function amount(data, type = 'add', where = 'wallet', amount, by) {
         if (type === 'add') data.bank += amount;
         else data.bank -= amount;
     } else {
-        // data.bank += amount;
-        // if ((data.wallet - amount) < 0) {
-        //     const a = data.wallet;
-        //     data.wallet = 0;
-        //     data.bank -= Number(String(a - amount).replace("-", ''));
-        // } else data.bank -= amount;
-        // data.wallet -= amount;
         if (type === 'add') data.wallet += amount;
         else data.wallet -= amount;
     };
     if (data.bankSpace > 0 && data.bank > data.bankSpace) {
         const a = data.bank;
         data.bank = data.bankSpace;
-        data.wallet += Math.abs(a - data.bankSpace); //Number(String(a - data.bankSpace).replace("-", ''));
-    } //else {
-    // if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
-    // }
-    // if (maxWallet > 0 && data.wallet > maxWallet) data.wallet = maxWallet;
+        data.wallet += Math.abs(a - data.bankSpace);
+    }
     if (!data.networth) data.networth = 0;
     data.networth = data.bank + data.wallet;
     event.emit('balanceUpdate', data, by.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' '))
@@ -88,11 +74,15 @@ async function setBankSpace(userID, guildID, newAmount) {
     data.bankSpace = parseInt(String(newAmount).replace('zero', 0));
     await saveUser(data);
     event.emit('userUpdate', oldData, data);
-    return {
+    if (oldData.bankSpace !== data.bankSpace) return {
         error: false,
         type: 'success',
         amount: data.bankSpace
     };
+    else return {
+        error: true,
+        type: 'same-amount'
+    }
 }
 // ===================================================================
 async function gamble(settings) {
@@ -173,25 +163,8 @@ async function withdraw(settings) {
             error: true,
             type: 'no-money'
         };
-        // if (settings.amount > data.bank) return {
-        //     error: true,
-        //     type: 'low-money'
-        // }
         data.wallet += data.bank;
         data.bank = 0;
-        // if (maxWallet > 0 && data.wallet > maxWallet) {
-        //     const a = data.wallet - maxWallet;
-        //     if (a > 0) data.bank += a;
-        //     data.wallet = maxWallet
-        // };
-        // if (maxBank > 0 && data.bank > maxBank) {
-        //     const a = data.bank - maxBank;
-        //     if (a > 0) {
-        //         if (data.wallet !== maxWallet) data.wallet += a;
-        //     }
-        //     data.bank = maxBank
-        // };
-
         if (!data.networth) data.networth = 0;
         data.networth = data.bank + data.wallet;
         event.emit('userUpdate', oldData, data);
@@ -257,27 +230,12 @@ async function deposite(settings) {
         data.bank += data.wallet;
         data.wallet = 0;
 
-        // if (maxWallet > 0 && data.wallet > maxWallet) {
-        //     const a = data.wallet - maxWallet;
-        //     if (a > 0) data.bank += a;
-        //     data.wallet = maxWallet
-        // };
-        // if (maxBank > 0 && data.bank > maxBank) {
-        //     const a = data.bank - maxBank;
-        //     if (a > 0) {
-        //         if (data.wallet !== maxWallet) data.wallet += a;
-        //     }
-        //     data.bank = maxBank
-        // };
-
         if (data.bankSpace > 0 && data.bank > data.bankSpace) {
             const a = data.bank;
             data.bank = data.bankSpace;
-            data.wallet += Math.abs(a - data.bankSpace); // Number(String(a - data.bankSpace).replace("-", ''));
+            data.wallet += Math.abs(a - data.bankSpace);
         }
-        // else {
-        //     if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
-        // }
+
 
         if (!data.networth) data.networth = 0;
         data.networth = data.bank + data.wallet;
@@ -311,8 +269,8 @@ async function deposite(settings) {
         if ((data.wallet - money) < 0) {
             const a = data.wallet;
             data.wallet = 0;
-            data.bank -= Math.abs(a - money); //Number(String(a - money).replace("-", ''));
-        } //else data.bank -= money;
+            data.bank -= Math.abs(a - money);
+        }
 
         data.wallet -= money;
 
@@ -322,12 +280,8 @@ async function deposite(settings) {
         if (data.bankSpace > 0 && data.bank > data.bankSpace) {
             const a = data.bank;
             data.bank = data.bankSpace;
-            data.wallet += Math.abs(a - data.bankSpace); //Number(String(a - data.bankSpace).replace("-", ''));
+            data.wallet += Math.abs(a - data.bankSpace);
         }
-
-        // else {
-        //     if (maxBank > 0 && data.bank > maxBank) data.bank = maxBank;
-        // }
 
         await saveUser(data);
         event.emit('userUpdate', oldData, data);
@@ -991,7 +945,7 @@ async function findUser(settings, uid, gid, by) {
     });
     if (!find) find = await makeUser(settings, false, uid, gid)
 
-    if (defaultBankLimit > 0 && find.bankSpace == 0) find.bankSpace = defaultBankLimit;
+    if (maxBank > 0 && find.bankSpace == 0) find.bankSpace = maxBank;
     if (!find.streak) find.streak = {};
     if (!find.streak.hourly) find.streak.hourly = 1;
     if (!find.streak.daily) find.streak.daily = 1;
@@ -1062,7 +1016,7 @@ async function makeUser(settings, user2 = false, uid, gid) {
         guildID: gid || settings.guild.id || null,
         wallet: wallet || 0,
         bank: bank || 0,
-        bankSpace: defaultBankLimit || 0,
+        bankSpace: maxBank || 0,
         streak: {
             hourly: 1,
             daily: 1,
@@ -1214,7 +1168,6 @@ module.exports = {
     setMaxBankAmount,
     setMaxWalletAmount,
     setBankSpace,
-    setDefaultBankLimitForUser,
     searchForNewUpdate,
     addMoneyToAllUsers,
     removeMoneyFromAllUsers
