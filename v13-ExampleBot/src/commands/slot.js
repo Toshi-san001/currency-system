@@ -1,8 +1,16 @@
 const CurrencySystem = require("currency-system");
 const cs = new CurrencySystem;
 const Discord = require("discord.js");
+
 exports.run = async (client, message, args) => {
     // Slots code Start here:
+    const ifLostmoney = 5000;
+    const user = await cs.findUser({
+        user: message.author,
+        guild: message.guild
+    });
+
+    if (user.wallet < ifLostmoney) return message.channel.send(`You don't have enough money to play this game. You need $${Math.abs(user.wallet - ifLostmoney)} more to play.`);
     /* SPIN ANIMATION*/
     const slotemoji = ":money_mouth:"; // You can even use animated emojis!
     /* ITEMS (SLOTS) */
@@ -62,11 +70,10 @@ exports.run = async (client, message, args) => {
     /* DEDUCT RESULTS */
     if ($$ !== $ && $$ !== $$$) {
         setTimeout(async () => {
-            const money = 5000;
             let result = await cs.removeMoney({
                 user: message.user,
                 guild: message.guild, // { id: null }
-                amount: money,
+                amount: ifLostmoney,
             });
             message.followUp(`Shit, ${message.user.tag} you lost $${money}! You now have $${result.rawData.wallet} in your wallet!`);
         }, 3000);
