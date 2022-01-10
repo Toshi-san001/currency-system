@@ -56,7 +56,9 @@ function amount(data, type = 'add', where = 'wallet', amount, by) {
     }
     if (!data.networth) data.networth = 0;
     data.networth = data.bank + data.wallet;
-    event.emit('balanceUpdate', data, by.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' '))
+    try {
+        event.emit('balanceUpdate', data, by.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' '))
+    } catch (E) {};
     return data;
 };
 // ===================================================================
@@ -955,8 +957,9 @@ async function findUser(settings, uid, gid, by) {
     if (!find.streak.yearly) find.streak.yearly = 1;
     if (!find.streak.hafly) find.streak.hafly = 1;
     if (!find.streak.quaterly) find.streak.quaterly = 1;
-
-    event.emit('userFetch', find, by.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' '));
+    try {
+        event.emit('userFetch', find, by.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' '));
+    } catch (e) {}
     return find;
 };
 // ===================================================================
