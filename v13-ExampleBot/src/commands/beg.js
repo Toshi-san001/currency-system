@@ -6,7 +6,8 @@ exports.run = async (client, message, args) => {
         user: message.user,
         guild: message.guild,
         minAmount: 100,
-        maxAmount: 400
+        maxAmount: 400,
+        cooldown: 10 // 60 seconds
 
     });
     if (result.error) return message.reply(`You have begged recently Try again in ${result.time}`);

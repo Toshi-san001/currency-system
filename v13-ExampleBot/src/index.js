@@ -44,8 +44,6 @@ cs.setMaxBankAmount(10000);
 cs.setMaxWalletAmount(10000);
 // Search for new npm package updates on bot startup! Latest version will be displayed in console.
 cs.searchForNewUpdate(true)
-// Set Default Maximum Amount of Bank Currency a user can have! (can be changed according to per user) here 0 means infinite.
-cs.setDefaultBankLimitForUser(1000)
 
 
 process.on("unhandledRejection", _ => console.error(_.stack + '\n' + '='.repeat(20)));
@@ -186,12 +184,8 @@ client.on('messageCreate', async message => {
 });
 
 function clean(string) {
-    if (typeof text === "string") {
-        return string.replace(/`/g, "`" + String.fromCharCode(8203))
-            .replace(/@/g, "@" + String.fromCharCode(8203))
-    } else {
-        return string;
-    }
+    if (typeof text === "string") return string.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203))
+    else return string;
 }
 
 Object.defineProperty(Array.prototype, "get", {

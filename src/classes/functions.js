@@ -647,6 +647,7 @@ async function beg(settings) {
     else {
         const amountt = Math.round((settings.minAmount || 200) + Math.random() * (settings.maxAmount || 400));
         data.lastBegged = Date.now();
+        data.begTimeout = timeout;
         data = amount(data, 'add', 'wallet', amountt, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
         await saveUser(data);
         event.emit('userUpdate', oldData, data);
@@ -797,7 +798,7 @@ async function info(userID, guildID) {
     let lastBeggedy = true;
     let lastQuaterlyy = true;
     let lastWorkk = true;
-    if (data.lastBegged !== null && 240 - (Date.now() - data.lastBegged) / 1000 > 0) lastBeggedy = false;
+    if (data.lastBegged !== null && (data.begTimeout || 240) - (Date.now() - data.lastBegged) / 1000 > 0) lastBeggedy = false;
     if (data.lastHourly !== null && 3600 - (Date.now() - data.lastHourly) / 1000 > 0) lastHourlyy = false;
     if (data.lastDaily !== null && 86400 - (Date.now() - data.lastDaily) / 1000 > 0) lastDailyy = false;
     if (data.lastHafly !== null && 43200 - (Date.now() - data.lastHafly) / 1000 > 0) lastHaflyy = false;
@@ -831,7 +832,7 @@ async function info(userID, guildID) {
             },
             Begged: {
                 used: lastBeggedy,
-                timeLeft: parseSeconds(Math.floor(240 - (Date.now() - data.lastBegged) / 1000))
+                timeLeft: parseSeconds(Math.floor((data.begTimeout || 240) - (Date.now() - data.lastBegged) / 1000))
             },
             Quaterly: {
                 used: lastQuaterlyy,

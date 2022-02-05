@@ -33,6 +33,10 @@ module.exports = model('currency', new Schema({
   lastBegged: def,
   lastWork: def,
   bankSpace: def,
+  begTimeout: {
+    type: Number,
+    default: 240
+  },
   streak: {
     hourly: def2,
     daily: def2,
