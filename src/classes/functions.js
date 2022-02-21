@@ -332,6 +332,7 @@ async function globalLeaderboard() {
             var existingIndex = output.indexOf(existing[0]);
             output[existingIndex].bank = output[existingIndex].bank + item.bank
             output[existingIndex].wallet = output[existingIndex].wallet + item.wallet
+            output[existingIndex].networth = output[existingIndex].wallet + output[existingIndex].bank;
         } else {
             output.push(item);
         }
