@@ -153,27 +153,29 @@ class CurrencySystem {
             error: true,
             type: 'Unknown-Item'
         };
-        let done = false;
-        let deleteItem = true;
-
-        for (let j in data.inventory) {
-            if (data.inventory[thing].name === data.inventory[j].name) deleteItem = false;
-        };
+        let done = false,
+            deletedDB = {};
 
 
-        if (deleteItem == false) {
-            for (let i in data.inventory) {
-                for (let j in data.inventory) {
-                    if (data.inventory[i].name === data.inventory[thing].name) {
-                        data.inventory[j].amount--
-                        done = true;
-                        if (data.inventory[j].amount == 0 || data.inventory[j].amount < 0) done = false;
-                    };
-                };
+        for (let i in data.inventory) {
+            if ((data.inventory[i] === data.inventory[thing])) {
+                if (data.inventory[i].amount > 1) {
+                    data.inventory[i].amount--;
+                    deletedDB = data.inventory[i];
+                    done = true;
+                } else if (data.inventory[i].amount === 1) {
+                    deletedDB = data.inventory[i];
+                    deletedDB.amount = 0;
+                    data.inventory.splice(i, 1);
+                    done = true;
+                }
             }
         }
-        const deletedDB = data.inventory[thing];
-        if (done == false) data.inventory.splice(thing, 1);
+
+        if (done == false) return {
+            error: true,
+            type: 'Invalid-Item-Number'
+        };
 
         require('./models/currency').findOneAndUpdate({
             guildID: settings.guild.id || null,
