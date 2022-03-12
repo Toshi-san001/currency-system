@@ -29,7 +29,8 @@ exports.run = async (client, message, args) => {
             item: i + 1
         });
         if (result.error || r2.error) {
-            console.log(result || r2)
+            console.log(result);
+            console.log(r2);
             return message.reply("Unknown error occured see console.")
         } else return message.reply("You've used " + item + " and earned $" + money)
 
