@@ -23,13 +23,13 @@ exports.run = async (client, message, args) => {
             amount: money,
             wheretoPutMoney: 'wallet'
         });
-        await cs.removeUserItem({
+        let r2 = await cs.removeUserItem({
             user: message.user,
             guild: message.guild,
             item: i + 1
         });
-        if (result.error) {
-            console.log(result)
+        if (result.error || r2.error) {
+            console.log(result || r2)
             return message.reply("Unknown error occured see console.")
         } else return message.reply("You've used " + item + " and earned $" + money)
 
