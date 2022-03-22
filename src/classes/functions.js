@@ -385,8 +385,8 @@ async function monthly(settings) {
     else {
         data.lastMonthly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
-        if ((Date.now() - monthly) / 1000 > timeout * 2) data.streak.monthly = 1;
-        else data.streak.monthly += 1;
+        if ((Date.now() - monthly) / 1000 > timeout * 2) data.streak.monthly = 0;
+        data.streak.monthly += 1;
         await saveUser(data);
         event.emit('userUpdate', oldData, data);
         return {
@@ -412,8 +412,8 @@ async function yearly(settings) {
     else {
         data.lastYearly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
-        if ((Date.now() - lastYearly) / 1000 > timeout * 2) data.streak.yearly = 1;
-        else data.streak.yearly += 1;
+        if ((Date.now() - lastYearly) / 1000 > timeout * 2) data.streak.yearly = 0;
+        data.streak.yearly += 1;
         await saveUser(data);
         event.emit('userUpdate', oldData, data);
         return {
@@ -439,8 +439,8 @@ async function weekly(settings) {
     else {
         data.lastWeekly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
-        if ((Date.now() - data.lastWeekly) / 1000 > timeout * 2) data.streak.weekly = 1;
-        else data.streak.weekly += 1;
+        if ((Date.now() - data.lastWeekly) / 1000 > timeout * 2) data.streak.weekly = 0;
+        data.streak.weekly += 1;
         await saveUser(data);
         event.emit('userUpdate', oldData, data);
         return {
@@ -466,8 +466,8 @@ async function quaterly(settings) {
     else {
         data.lastQuaterly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
-        if ((Date.now() - quaterly) / 1000 > timeout * 2) data.streak.quaterly = 1;
-        else data.streak.quaterly += 1;
+        if ((Date.now() - quaterly) / 1000 > timeout * 2) data.streak.quaterly = 0;
+        data.streak.quaterly += 1;
         await saveUser(data);
         event.emit('userUpdate', oldData, data);
         return {
@@ -493,8 +493,8 @@ async function hafly(settings) {
     else {
         data.lastHafly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
-        if ((Date.now() - lastHafly) / 1000 > timeout * 2) data.streak.hafly = 1;
-        else data.streak.hafly += 1;
+        if ((Date.now() - lastHafly) / 1000 > timeout * 2) data.streak.hafly = 0;
+        data.streak.hafly += 1;
         await saveUser(data);
         event.emit('userUpdate', oldData, data);
         return {
@@ -519,8 +519,8 @@ async function daily(settings) {
     else {
         data.lastDaily = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
-        if ((Date.now() - daily) / 1000 > timeout * 2) data.streak.daily = 1;
-        else data.streak.daily += 1;
+        if ((Date.now() - daily) / 1000 > timeout * 2) data.streak.daily = 0;
+        data.streak.daily += 1;
         await saveUser(data);
         event.emit('userUpdate', oldData, data);
         return {
@@ -547,8 +547,8 @@ async function hourly(settings) {
     else {
         data.lastHourly = Date.now();
         data = amount(data, 'add', 'wallet', settings.amount, arguments.callee.toString().substring(15, arguments.callee.toString().indexOf('(')));
-        if ((Date.now() - lastHourly) / 1000 > timeout * 2) data.streak.hourly = 1;
-        else data.streak.hourly += 1;
+        if ((Date.now() - lastHourly) / 1000 > timeout * 2) data.streak.hourly = 0;
+        data.streak.hourly += 1;
         await saveUser(data);
         event.emit('userUpdate', oldData, data);
         return {
@@ -952,13 +952,13 @@ async function findUser(settings, uid, gid, by) {
 
     if (maxBank > 0 && find.bankSpace == 0) find.bankSpace = maxBank;
     if (!find.streak) find.streak = {};
-    if (!find.streak.hourly) find.streak.hourly = 1;
-    if (!find.streak.daily) find.streak.daily = 1;
-    if (!find.streak.weekly) find.streak.weekly = 1;
-    if (!find.streak.monthly) find.streak.monthly = 1;
-    if (!find.streak.yearly) find.streak.yearly = 1;
-    if (!find.streak.hafly) find.streak.hafly = 1;
-    if (!find.streak.quaterly) find.streak.quaterly = 1;
+    if (!find.streak.hourly) find.streak.hourly = 0;
+    if (!find.streak.daily) find.streak.daily = 0;
+    if (!find.streak.weekly) find.streak.weekly = 0;
+    if (!find.streak.monthly) find.streak.monthly = 0;
+    if (!find.streak.yearly) find.streak.yearly = 0;
+    if (!find.streak.hafly) find.streak.hafly = 0;
+    if (!find.streak.quaterly) find.streak.quaterly = 0;
     try {
         event.emit('userFetch', find, by.split(' ').map(w => w[0].toUpperCase() + w.substr(1).toLowerCase()).join(' '));
     } catch (e) {}
@@ -1024,13 +1024,13 @@ async function makeUser(settings, user2 = false, uid, gid) {
         bank: bank || 0,
         bankSpace: maxBank || 0,
         streak: {
-            hourly: 1,
-            daily: 1,
-            weekly: 1,
-            monthly: 1,
-            yearly: 1,
-            hafly: 1,
-            quaterly: 1,
+            hourly: 0,
+            daily: 0,
+            weekly: 0,
+            monthly: 0,
+            yearly: 0,
+            hafly: 0,
+            quaterly: 0,
         }
     });
     if (!newUser) throw new Error('Missing data to fetch from DB. (A function in Currency System is used and userID wasn\'t provided.)')

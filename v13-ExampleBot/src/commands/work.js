@@ -11,7 +11,7 @@
 
         });
         if (result.error) return message.reply(`You have already worked recently Try again in ${result.time}`);
-        else message.reply(`You worked as a ${result.workType} and earned $${result.amount}.`)
+        else message.reply(`You worked as a ${result.workType} and earned $${result.amount}. your streak is ${result.rawData.streak.weekly}`)
     }
 
     exports.help = {

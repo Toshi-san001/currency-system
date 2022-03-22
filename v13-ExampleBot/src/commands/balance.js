@@ -6,7 +6,6 @@
             user: user,
             guild: message.guild.id
         });
-        // console.log(message.guild.id)
         return message.reply(`${user.tag}, has $${(result.wallet).toLocaleString()} in there wallet and $${(result.bank).toLocaleString()} in there bank. There Max bank has been set to $${(result.rawData.bankSpace.toLocaleString())}`);
     }
 
