@@ -226,7 +226,7 @@ async function deposite(settings) {
 
     if (money === 'all' || money === 'max') {
 
-        if (wallet === 0) return {
+        if (data.wallet === 0) return {
             error: true,
             type: 'no-money'
         };
