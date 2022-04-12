@@ -19,7 +19,7 @@ const {
  */
 class CurrencySystem {
     setMongoURL(password, toLog = true) {
-        if (!password.startsWith("mongodb+srv")) throw new TypeError("Invalid MongoURL");
+        if (!password.startsWith("mongodb")) throw new TypeError("Invalid MongoURL");
         connect(password, toLog);
         process.mongoURL = password;
         event.emit('debug', `[ CS => Debug ] : Successfully saved MongoDB URL ( Used in Shop Functions )`)
