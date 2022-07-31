@@ -31,7 +31,7 @@
             description: "An efficient way to double your money.",
             options: [{
                 name: 'amount',
-                type: 'INTEGER',
+                type: 4,
                 description: 'Amount of money you want to gamble.',
                 required: true,
             }]

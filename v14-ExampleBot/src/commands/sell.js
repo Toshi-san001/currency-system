@@ -24,7 +24,7 @@ exports.help = {
         description: "A way to sell item",
         options: [{
             name: 'item',
-            type: 'INTEGER',
+            type: 4,
             description: 'Item Number from Inventory',
             required: true,
         }]

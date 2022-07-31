@@ -30,19 +30,19 @@ exports.help = {
         description: "A way to additem to shop",
         options: [{
                 name: 'name',
-                type: 'STRING',
+                type: 3,
                 description: 'Name of Item.',
                 required: true,
             }, {
                 name: 'price',
-                type: 'INTEGER',
+                type: 4,
                 description: 'Price of item',
                 required: true,
             },
 
             {
                 name: 'description',
-                type: 'STRING',
+                type: 3,
                 description: 'Description of the item. (Can\'t be Changed later.)',
                 required: false,
             }

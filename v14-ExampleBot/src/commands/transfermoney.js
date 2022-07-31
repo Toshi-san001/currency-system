@@ -28,13 +28,13 @@
             description: "A way to transfer money",
             options: [{
                     name: 'amount',
-                    type: 'INTEGER',
+                    type: 4,
                     description: 'amount to transfer',
                     required: true,
                 },
                 {
                     name: 'user',
-                    type: 'USER',
+                    type: 6,
                     description: 'user to trasnfer money to',
                     required: true,
                 }

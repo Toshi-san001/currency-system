@@ -24,13 +24,13 @@ exports.help = {
         description: "A way to add the amount  of money in everyone's bank or wallet.",
         options: [{
                 name: 'amount',
-                type: 'INTEGER',
+                type: 4,
                 description: 'Amount of money you want to add.',
                 required: true,
             },
             {
                 name: 'where_to_put_money',
-                type: 'BOOLEAN',
+                type: 5,
                 description: 'TRUE means bank, FALSE means wallet.',
                 required: true,
             }

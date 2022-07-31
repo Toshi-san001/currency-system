@@ -33,7 +33,7 @@
             description: "A way to earn money",
             options: [{
                 name: 'user',
-                type: 'USER',
+                type: 6,
                 description: 'The user you want to rob..',
                 required: true,
             }]

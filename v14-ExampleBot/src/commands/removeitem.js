@@ -23,7 +23,7 @@ exports.help = {
         description: "A way to removeItem to shop",
         options: [{
             name: 'item',
-            type: 'INTEGER',
+            type: 4,
             description: 'Item number you want to remove',
             required: false,
         }]

@@ -45,7 +45,7 @@ exports.help = {
         description: "A way to use",
         options: [{
             name: 'item',
-            type: 'STRING',
+            type: 3,
             description: 'Item Name of item which you want to use',
             required: true,
         }]

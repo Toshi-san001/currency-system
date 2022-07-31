@@ -29,7 +29,7 @@
             description: "A way to get money out of the bank.",
             options: [{
                 name: 'amount',
-                type: 'INTEGER',
+                type: 4,
                 description: 'Amount of money to withdraw.',
                 required: true,
             }]

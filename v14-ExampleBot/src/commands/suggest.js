@@ -32,12 +32,12 @@ exports.help = {
         description: "suggest stuff here",
         options: [{
             name: 'channel',
-            type: 'CHANNEL',
+            type: 7,
             description: 'Channel you want to send suggestion in',
             required: true,
         }, {
             name: 'suggestion',
-            type: 'STRING',
+            type: 3,
             description: 'Suggestion itself',
             required: true,
         }]

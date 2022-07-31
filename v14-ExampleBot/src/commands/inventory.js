@@ -30,7 +30,7 @@ exports.help = {
     options: [
       {
         name: "user",
-        type: "USER",
+        type: 6,
         description: "The user you want to check inventory of..",
         required: false,
       },

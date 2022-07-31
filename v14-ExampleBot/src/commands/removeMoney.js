@@ -25,19 +25,19 @@ exports.help = {
         description: "A way to remove the amount  of money from bank or wallet.",
         options: [{
                 name: 'amount',
-                type: 'INTEGER',
+                type: 4,
                 description: 'Amount of money you want to remove.',
                 required: true,
             },
             {
                 name: 'where_to_put_money',
-                type: 'BOOLEAN',
+                type: 5,
                 description: 'TRUE means bank, FALSE means wallet.',
                 required: true,
             },
             {
                 name: 'user',
-                type: 'USER',
+                type: 6,
                 description: 'The user you want to remove money to.',
                 required: false,
             }

@@ -29,7 +29,7 @@
             description: "A way to get money in of the bank.",
             options: [{
                 name: 'amount',
-                type: 'INTEGER',
+                type: 4,
                 description: 'Amount of money you want to deposite.',
                 required: true,
             }]

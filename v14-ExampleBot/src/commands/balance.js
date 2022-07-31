@@ -16,7 +16,7 @@
             description: "A way to know the amount of money in your bank.",
             options: [{
                 name: 'user',
-                type: 'USER',
+                type: 6,
                 description: 'The user you want to check balance of..',
                 required: false,
             }]
