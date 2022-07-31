@@ -1,0 +1,30 @@
+    const CurrencySystem = require("currency-system");
+    const cs = new CurrencySystem;
+    exports.run = async (client, message, args) => {
+
+        let result = await cs.work({
+            user: message.user,
+            guild: message.guild,
+            maxAmount: 100,
+            replies: ['Programmer', 'Builder', 'Waiter', 'Busboy', 'Chief', 'Mechanic'],
+            cooldown: 25 //25 seconds,
+
+        });
+        if (result.error) return message.reply(`You have already worked recently Try again in ${result.time}`);
+        else message.reply(`You worked as a ${result.workType} and earned $${result.amount}.`)
+    }
+
+    exports.help = {
+        name: "work",
+        data: {
+            name: 'work',
+            description: "A way to earn money",
+            options: []
+        }
+    };
+
+    exports.conf = {
+        aliases: ["wk", "wr"],
+        cooldown: 5 // This number is a seconds, not a milliseconds.
+        // 1 = 1 seconds.
+    }

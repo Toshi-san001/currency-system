@@ -1,0 +1,39 @@
+const CurrencySystem = require("currency-system");
+const cs = new CurrencySystem;
+exports.run = async (client, message, args) => {
+    let wheretoPutMoney = args.get('where_to_put_money');
+    if (wheretoPutMoney) wheretoPutMoney = 'bank';
+    else wheretoPutMoney = 'wallet';
+    let amount = args.get('amount')
+    let money = parseInt(amount);
+    let result = await cs.addMoneyToAllUsers({
+        guild: message.guild.id,
+        amount: money,
+        wheretoPutMoney: wheretoPutMoney
+    });
+    if (result.error) {
+        if (result.type === 'negative-money') return message.reply("You cant add negitive money");
+        else return message.reply('No User\'s found');
+    } else message.reply(`Successfully added $${money} to ${result.rawData.length} people!, ( in ${wheretoPutMoney} )`)
+}
+
+exports.help = {
+    name: "addmoneytoallusers",
+    data: {
+        name: 'addmoneytoallusers',
+        description: "A way to add the amount  of money in everyone's bank or wallet.",
+        options: [{
+                name: 'amount',
+                type: 'INTEGER',
+                description: 'Amount of money you want to add.',
+                required: true,
+            },
+            {
+                name: 'where_to_put_money',
+                type: 'BOOLEAN',
+                description: 'TRUE means bank, FALSE means wallet.',
+                required: true,
+            }
+        ]
+    }
+}

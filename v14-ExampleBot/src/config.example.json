@@ -1,0 +1,5 @@
+{
+    "token": "BOT_TOKEN_HERE",
+    "mongourl": "MONGO_DB_URL",
+    "guildID":"GUILD_ID_HERE_WHERE_SLASH_COMMANDS_ARE_SENT"
+}
