@@ -470,11 +470,11 @@ async function monthly(settings) {
   const oldData = data;
   let monthly = data.lastMonthly;
   let timeout = 2.592e6;
-  if (monthly !== null && (timeout - (Date.now() - monthly)) / 1000 > 0)
+  if (monthly !== null && timeout - (Date.now() - monthly) / 1000 > 0)
     return {
       error: true,
       type: "time",
-      time: parseSeconds(Math.floor((timeout - (Date.now() - monthly)) / 1000)),
+      time: parseSeconds(Math.floor(timeout - (Date.now() - monthly) / 1000)),
     };
   else {
     data.lastMonthly = Date.now();
@@ -511,12 +511,12 @@ async function yearly(settings) {
   );
   const oldData = data;
   let yearly = data.lastYearly;
-  let timeout = 3.156e10;
-  if (yearly !== null && (timeout - (Date.now() - yearly) )/ 1000 > 0)
+  let timeout = 3.156e+10;
+  if (yearly !== null && (timeout - (Date.now() - yearly) / 1000) >= 0)
     return {
       error: true,
       type: "time",
-      time: parseSeconds(Math.floor((timeout - (Date.now() - yearly)) / 1000)),
+      time: parseSeconds(Math.floor(timeout - (Date.now() - yearly) / 1000)),
     };
   else {
     data.lastYearly = Date.now();
@@ -554,11 +554,11 @@ async function weekly(settings) {
   const oldData = data;
   let weekly = data.lastWeekly;
   let timeout = 604800;
-  if (weekly !== null && (timeout - (Date.now() - weekly)) / 1000 > 0)
+  if (weekly !== null && timeout - (Date.now() - weekly) / 1000 > 0)
     return {
       error: true,
       type: "time",
-      time: parseSeconds(Math.floor((timeout - (Date.now() - weekly)) / 1000)),
+      time: parseSeconds(Math.floor(timeout - (Date.now() - weekly) / 1000)),
     };
   else {
     data.lastWeekly = Date.now();
@@ -597,11 +597,11 @@ async function quaterly(settings) {
   const oldData = data;
   let quaterly = data.lastQuaterly;
   let timeout = 21600;
-  if (quaterly !== null && (timeout - (Date.now() - quaterly)) / 1000 > 0)
+  if (quaterly !== null && timeout - (Date.now() - quaterly) / 1000 > 0)
     return {
       error: true,
       type: "time",
-      time: parseSeconds(Math.floor((timeout - (Date.now() - quaterly)) / 1000)),
+      time: parseSeconds(Math.floor(timeout - (Date.now() - quaterly) / 1000)),
     };
   else {
     data.lastQuaterly = Date.now();
@@ -639,11 +639,11 @@ async function hafly(settings) {
   const oldData = data;
   let hafly = data.lastHafly;
   let timeout = 43200;
-  if (hafly !== null && (timeout - (Date.now() - hafly)) / 1000 > 0)
+  if (hafly !== null && timeout - (Date.now() - hafly) / 1000 > 0)
     return {
       error: true,
       type: "time",
-      time: parseSeconds(Math.floor((timeout - (Date.now() - hafly)) / 1000)),
+      time: parseSeconds(Math.floor(timeout - (Date.now() - hafly) / 1000)),
     };
   else {
     data.lastHafly = Date.now();
@@ -656,7 +656,7 @@ async function hafly(settings) {
         .toString()
         .substring(15, arguments.callee.toString().indexOf("("))
     );
-    if ((Date.now() - lastHafly) / 1000 > timeout * 2) data.streak.hafly = 0;
+    if ((Date.now() - data.lastHafly) / 1000 > timeout * 2) data.streak.hafly = 0;
     data.streak.hafly += 1;
     await saveUser(data);
     event.emit("userUpdate", oldData, data);
@@ -681,11 +681,11 @@ async function daily(settings) {
   const oldData = data;
   let daily = data.lastDaily;
   let timeout = 86400;
-  if (daily !== null && (timeout - (Date.now() - daily)) / 1000 > 0)
+  if (daily !== null && timeout - (Date.now() - daily) / 1000 > 0)
     return {
       error: true,
       type: "time",
-      time: parseSeconds(Math.floor((timeout - (Date.now() - daily)) / 1000)),
+      time: parseSeconds(Math.floor(timeout - (Date.now() - daily) / 1000)),
     };
   else {
     data.lastDaily = Date.now();
@@ -724,12 +724,12 @@ async function hourly(settings) {
   let lastHourly = data.lastHourly;
   let timeout = 3600;
 
-  if (lastHourly !== null && (timeout - (Date.now() - lastHourly)) / 1000 > 0)
+  if (lastHourly !== null && timeout - (Date.now() - lastHourly) / 1000 > 0)
     return {
       error: true,
       type: "time",
       time: parseSeconds(
-        Math.floor((timeout - (Date.now() - lastHourly)) / 1000)
+        Math.floor(timeout - (Date.now() - lastHourly) / 1000)
       ),
     };
   else {
@@ -1675,7 +1675,7 @@ async function _checkUpdate() {
       "\x1b[34m" +
         `|                ${require("../../package.json").version} --> ${
           packageData["dist-tags"].latest
-        }                |`
+        }                  |`
     );
     console.log(
       "\x1b[36m" + '|        Run "npm i currency-system@latest"       |'

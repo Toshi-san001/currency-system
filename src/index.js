@@ -118,7 +118,7 @@ class CurrencySystem {
     };
   }
   async setItems(settings) {
-    let inventoryData = await getInventory(settings);
+   // let inventoryData = await getInventory(settings);
 
     if (!settings.shop)
       return {
