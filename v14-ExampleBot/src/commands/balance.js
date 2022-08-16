@@ -10,9 +10,9 @@
     }
 
     exports.help = {
-        name: "balance",
+        name: "bank",
         data: {
-            name: 'balance',
+            name: 'bank',
             description: "A way to know the amount of money in your bank.",
             options: [{
                 name: 'user',
